@@ -239,3 +239,25 @@ Ajout de boutons Afficher/Masquer sur les deux champs du formulaire d'authentifi
 - confirmation du mot de passe lors de l'inscription.
 
 Le bouton bascule uniquement le type du champ entre `password` et `text`. La valeur saisie n'est ni modifiée ni transmise différemment. Contrôle clavier possible comme les autres boutons.
+
+
+## Recette utilisateur — première connexion et profil vierge — 15 novembre 2026
+
+L'utilisateur a réalisé un test réel sur la DEV et a confirmé que le parcours fonctionne :
+- ouverture de Carnet HS DEV ;
+- création du compte avec adresse e-mail et mot de passe ;
+- réception du courriel Supabase et confirmation de l'adresse ;
+- retour vers l'URL correcte de Carnet HS DEV après confirmation ;
+- connexion au compte et affichage de l'espace personnel ;
+- affichage d'un profil vierge à compléter.
+
+Le retour vers la racine GitHub Pages, qui produisait une 404, a été corrigé en forçant l'URL de redirection DEV dans le parcours d'inscription et de réinitialisation du mot de passe.
+
+### Ergonomie validée
+L'utilisateur a demandé et validé l'ajout d'un contrôle Afficher/Masquer sur le mot de passe et sur sa confirmation. Modification intégrée dans le commit DEV `a282cce15ebf53093e13df7cbf2731fac0c5b1f8`.
+
+### Point restant — ne pas considérer la persistance du profil comme validée
+À ce stade, l'écran connecté indique que les heures restent locales et le formulaire de profil indique encore une mémorisation sur le téléphone. La création/connexion Supabase est donc validée par le test utilisateur, mais pas encore l'enregistrement du profil dans la table Supabase ni sa récupération sur un autre appareil. Ces tests restent à réaliser avant de déclarer la synchronisation et l'isolation des données pleinement validées.
+
+### Règle de suivi
+Toute nouvelle idée ou évolution explicitement validée par l'utilisateur doit être ajoutée au présent mémo DEV, avec sa date, son périmètre, son statut (validé / à tester / en attente) et, si disponible, le commit correspondant. La production reste hors périmètre tant qu'une migration n'a pas été explicitement autorisée.
