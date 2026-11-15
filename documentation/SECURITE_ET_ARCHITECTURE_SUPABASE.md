@@ -94,3 +94,15 @@ Configurer les URL du site et les URL de redirection autorisées dans Authentica
 `https://petitle-pod5.github.io/carnet-hs-dev/`
 
 Ne pas ajouter l'URL de production à ce projet DEV. Après cette étape, configurer les modèles d'e-mails de confirmation et de récupération, puis préparer le schéma PostgreSQL et les politiques RLS avant d'intégrer l'authentification à l'application.
+
+
+### E-mails Auth — état SMTP (15 novembre 2026)
+
+- Écran Authentication > Emails > SMTP Settings consulté.
+- `Enable custom SMTP` est actuellement désactivé ; ce réglage est laissé désactivé volontairement.
+- Le projet utilise donc le service SMTP intégré de Supabase pour les essais.
+- Limites documentées par Supabase pour ce service par défaut : envoi uniquement aux adresses e-mail autorisées de l'équipe/organisation du projet, plafond actuellement indiqué de 2 e-mails par heure pour l'ensemble du projet, service best-effort sans garantie de disponibilité ou de livraison. Ce service n'est pas destiné à la production.
+- Conséquence : les essais de confirmation/récupération ne pourront être réalisés qu'avec une adresse autorisée dans l'organisation Supabase tant qu'un SMTP personnalisé n'est pas configuré.
+- Un fournisseur SMTP externe sera nécessaire avant les tests avec des adresses de bêta-testeurs et avant toute mise en service publique.
+- Brevo reste une piste à évaluer, non choisie ni configurée à ce stade. Aucun identifiant SMTP n'a été saisi.
+- Ne pas désactiver la confirmation d'e-mail pour contourner ces limites.
