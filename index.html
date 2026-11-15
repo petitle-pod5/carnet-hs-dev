@@ -204,7 +204,7 @@ async function submitAuth(){
    const confirm=document.getElementById("authPasswordConfirm").value;
    if(password!==confirm){setAuthFeedback("Les deux mots de passe ne correspondent pas.",true);return;}
    if(!passwordIsStrong(password)){setAuthFeedback("Mot de passe trop faible : 12 caractères minimum, minuscules, majuscules, chiffre et symbole.",true);return;}
-   const {data:result,error}=await supabaseClient.auth.signUp({email,password});if(error)throw error;
+   const {data:result,error}=await supabaseClient.auth.signUp({email,password,options:{emailRedirectTo:"https://petitle-pod5.github.io/carnet-hs-dev/"}});if(error)throw error;
    setAuthFeedback(result.session?"Compte créé. Connexion en cours…":"Compte créé. Consulte ta messagerie pour confirmer ton adresse e-mail, puis reviens te connecter.");
   }else{
    const {data:result,error}=await supabaseClient.auth.signInWithPassword({email,password});if(error)throw error;
@@ -213,7 +213,7 @@ async function submitAuth(){
  }catch(e){setAuthFeedback(authErrorMessage(e),true);}finally{button.disabled=false;}
 }
 function authErrorMessage(e){const m=String(e&&e.message||"");if(/Invalid login credentials/i.test(m))return "Adresse e-mail ou mot de passe incorrect.";if(/Email not confirmed/i.test(m))return "Ton adresse e-mail n'est pas encore confirmée. Consulte le message de confirmation.";if(/already registered|already been registered/i.test(m))return "Cette adresse possède déjà un compte. Connecte-toi plutôt.";return "Erreur d'authentification : "+m;}
-async function resetAuthPassword(){const email=document.getElementById("authEmail").value.trim();if(!email){setAuthFeedback("Saisis d'abord ton adresse e-mail.",true);return;}try{const {error}=await supabaseClient.auth.resetPasswordForEmail(email,{redirectTo:window.location.origin+window.location.pathname});if(error)throw error;setAuthFeedback("Si un compte correspond à cette adresse, un e-mail de récupération sera envoyé. Vérifie aussi les courriers indésirables.");}catch(e){setAuthFeedback(authErrorMessage(e),true);}}
+async function resetAuthPassword(){const email=document.getElementById("authEmail").value.trim();if(!email){setAuthFeedback("Saisis d'abord ton adresse e-mail.",true);return;}try{const {error}=await supabaseClient.auth.resetPasswordForEmail(email,{redirectTo:"https://petitle-pod5.github.io/carnet-hs-dev/"});if(error)throw error;setAuthFeedback("Si un compte correspond à cette adresse, un e-mail de récupération sera envoyé. Vérifie aussi les courriers indésirables.");}catch(e){setAuthFeedback(authErrorMessage(e),true);}}
 function switchLocalStorageToUser(userId){KEY="carnetHS_v3_4_user_"+userId;BACKUP_KEY="carnetHS_auto_backups_v1_user_"+userId;ACTIVE_KEY="carnetHS_active_v1_user_"+userId;try{const saved=localStorage.getItem(KEY);data=saved?JSON.parse(saved):blankData();data.profile=data.profile||blankData().profile;data.entries=Array.isArray(data.entries)?data.entries:[];data.validations=data.validations||{};data.audit=Array.isArray(data.audit)?data.audit:[];const a=localStorage.getItem(ACTIVE_KEY);active=a?JSON.parse(a):null;}catch(e){data=blankData();active=null;}loadedAccountId=userId;}
 async function loadRemoteProfile(){
  const uid=currentUser.id;
