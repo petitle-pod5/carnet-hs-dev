@@ -156,3 +156,16 @@ Requête de lecture exécutée dans Supabase SQL Editor sur les six tables du sc
 - `validations`
 
 L'activation de RLS est donc confirmée pour les six tables. La vérification des policies installées et les tests d'isolation entre deux comptes distincts restent à effectuer.
+
+
+### Résultat du comptage des policies — 15 novembre 2026
+
+La requête de comptage retourne exactement 17 policies sur les six tables :
+- `audit_events` : 2
+- `missions` : 4
+- `overtime_entries` : 4
+- `profiles` : 3
+- `sync_receipts` : 2
+- `validations` : 2
+
+Le total et la répartition correspondent au script de migration. La présence des policies est confirmée ; leur comportement réel doit encore être vérifié par des tests d'accès avec deux comptes authentifiés distincts.
