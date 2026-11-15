@@ -135,3 +135,11 @@ La migration n'autorise pour l'instant que la validation auto-déclarée par le 
 - Après exécution, vérifier les six tables, l'état RLS et les policies.
 - Effectuer des tests avec deux comptes authentifiés distincts : le compte A ne doit jamais lire, modifier ou supprimer les données du compte B, et inversement.
 - La sécurité n'est pas considérée comme validée tant que ces tests négatifs et positifs ne sont pas passés.
+
+
+### Résultat de la migration — vérification visuelle (15 novembre 2026)
+
+La capture du Table Editor Supabase montre les six tables attendues dans le schéma `public` :
+`profiles`, `missions`, `overtime_entries`, `validations`, `audit_events` et `sync_receipts`.
+
+La présence des tables est confirmée visuellement. L'activation effective de RLS et la présence des politiques doivent encore être vérifiées par une requête SQL de contrôle ; la sécurité n'est donc pas encore déclarée validée.
