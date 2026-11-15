@@ -112,3 +112,23 @@ Ces éléments ne sont pas des engagements de développement tant qu'ils n'ont p
 
 ---
 *Document de suivi évolutif — Carnet HS DEV.*
+
+
+## 9. Revue statique du code — 15 novembre 2026
+
+**Inspection documentaire/code uniquement — aucun changement applicatif.**
+
+- [x] Examiner le flux d'authentification et l'isolation du stockage local dans le code DEV.
+- [x] Confirmer que le profil et la mission principale ont des fonctions de lecture/écriture Supabase.
+- [x] Confirmer que les HS, validations et événements d'audit restent locaux à ce stade.
+- [x] Identifier que la validation chef d'équipe actuelle est saisie par l'utilisateur connecté et n'est pas une approbation indépendante.
+- [ ] Tester les erreurs réseau pendant le chargement de session et la reprise après reconnexion.
+- [ ] Définir une migration contrôlée des anciennes données locales vers l'espace utilisateur, sans import automatique.
+- [ ] Concevoir et tester le vrai parcours de validation indépendante par le chef d'équipe.
+- [ ] Concevoir la synchronisation des HS avec idempotence, reprise hors ligne, gestion des conflits et accusés de réception.
+
+**Résultat :** aucune modification de code n'a été faite pendant cette revue. Les constats détaillés et leurs limites sont consignés dans `documentation/SECURITE_ET_ARCHITECTURE_SUPABASE.md`.
+
+## 10. Références Git
+
+- Création du tableau de suivi : commit `ce11b9f38858c4cf489fd0426883b034282fd7b8`.
