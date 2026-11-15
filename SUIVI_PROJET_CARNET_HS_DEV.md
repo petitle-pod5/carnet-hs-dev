@@ -132,3 +132,19 @@ Ces éléments ne sont pas des engagements de développement tant qu'ils n'ont p
 ## 10. Références Git
 
 - Création du tableau de suivi : commit `ce11b9f38858c4cf489fd0426883b034282fd7b8`.
+
+## 11. Préparation technique — prochaines étapes
+
+**Étude réalisée le 15/11/2026 — aucune modification applicative ou Supabase.**
+
+- [x] Décrire le flux cible de synchronisation des HS et les garanties attendues (file locale, UUID stable, idempotence, accusé serveur, reprise).
+- [x] Identifier la limite de `sync_receipts` : un reçu seul ne garantit pas une transaction atomique entre reçu et HS.
+- [x] Décrire le modèle cible de validation indépendante (compte chef séparé, délégation explicite, périmètre mission, décision auditée).
+- [x] Identifier les évolutions de schéma à étudier : délégations de validation et évolution du modèle de validation.
+- [ ] Faire valider les règles métier et le schéma cible avant toute migration.
+- [ ] Tester l'isolation à deux comptes avant ouverture de nouveaux droits RLS.
+- [ ] Implémenter la synchronisation des HS dans DEV après validation du schéma.
+- [ ] Recetter les scénarios hors ligne, reprise, doublons et multi-appareils.
+- [ ] Concevoir et tester les droits des chefs d'équipe sur DEV.
+
+Voir le détail dans `documentation/SECURITE_ET_ARCHITECTURE_SUPABASE.md`, section « Préparation technique — synchronisation et validation indépendante ».
