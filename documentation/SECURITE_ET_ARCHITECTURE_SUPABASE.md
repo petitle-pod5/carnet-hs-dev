@@ -143,3 +143,16 @@ La capture du Table Editor Supabase montre les six tables attendues dans le sch�
 `profiles`, `missions`, `overtime_entries`, `validations`, `audit_events` et `sync_receipts`.
 
 La présence des tables est confirmée visuellement. L'activation effective de RLS et la présence des politiques doivent encore être vérifiées par une requête SQL de contrôle ; la sécurité n'est donc pas encore déclarée validée.
+
+
+### Résultat du contrôle RLS — 15 novembre 2026
+
+Requête de lecture exécutée dans Supabase SQL Editor sur les six tables du schéma `public`. Résultat affiché : les six lignes ont `rls_active = true` :
+- `audit_events`
+- `missions`
+- `overtime_entries`
+- `profiles`
+- `sync_receipts`
+- `validations`
+
+L'activation de RLS est donc confirmée pour les six tables. La vérification des policies installées et les tests d'isolation entre deux comptes distincts restent à effectuer.
