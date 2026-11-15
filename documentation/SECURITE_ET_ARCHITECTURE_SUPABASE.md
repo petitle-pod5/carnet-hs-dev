@@ -181,3 +181,11 @@ Les captures de pg_policies montrent les conditions `USING` / `WITH CHECK` des p
 - reçus de synchronisation : SELECT et INSERT limités à `user_id = auth.uid()` ;
 - validations : SELECT limité au propriétaire ; INSERT en auto-déclaration, avec contrôle du compte validateur.
 La fin de l'expression de `validations_insert_self` est tronquée dans la capture ; sa condition complète doit être relue directement dans SQL avant de certifier le détail. Les tests d'isolation entre deux comptes restent à effectuer. L'application DEV n'est pas encore connectée à Supabase à ce stade.
+
+
+### Condition complète de validations_insert_self vérifiée — 15 novembre 2026
+
+La condition `WITH CHECK` a été affichée en trois segments dans Supabase et confirme exactement :
+`auth.uid() = user_id AND validator_user_id = auth.uid() AND validation_mode = 'self_recorded'`.
+
+Ainsi, dans cette première version, un utilisateur authentifié ne peut insérer qu'une validation rattachée à son propre compte, en se déclarant lui-même validateur, et uniquement en mode `self_recorded`. Cela ne constitue pas une validation indépendante par le chef d'équipe ; celle-ci reste désactivée jusqu'à conception d'une délégation/authentification appropriée.
