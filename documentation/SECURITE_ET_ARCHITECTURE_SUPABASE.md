@@ -56,3 +56,41 @@ Ne jamais demander ni intégrer une clé `service_role`, un mot de passe adminis
 ## Limite de la version DEV actuelle
 
 La version DEV peut préparer l'interface et les contrôles de profil, mais tant que Supabase n'est pas configuré et que les politiques RLS n'ont pas été testées, les données restent locales au navigateur. Aucun écran ne doit laisser croire qu'un compte ou une sauvegarde serveur existe déjà.
+
+
+## Journal de mise en place — 15 novembre 2026
+
+### Projet Supabase
+
+- Projet Supabase `carnet-hs-dev` créé dans l'espace du propriétaire.
+- Offre actuellement affichée : Free.
+- Le tableau de bord du projet a été ouvert et la rubrique Authentication a été atteinte.
+- L'URL de redirection du site n'est pas encore configurée.
+- Aucune connexion Supabase n'est encore intégrée au code de l'application.
+
+### Paramètres Auth vérifiés et enregistrés
+
+- Autoriser les nouvelles inscriptions : activé.
+- Confirmation de l'adresse e-mail : activée.
+- Fournisseur Email : activé.
+- Liaison manuelle de comptes : désactivée.
+- Connexions anonymes : désactivées.
+- Changement d'adresse e-mail sécurisé : activé (confirmation sur l'ancienne et la nouvelle adresse).
+- Changement de mot de passe sécurisé : activé.
+- Mot de passe actuel exigé lors d'une modification : activé.
+- Longueur minimale du mot de passe : 12 caractères.
+- Exigences : minuscules, majuscules, chiffres et symboles.
+- Magic links et OTP e-mail : désactivés (connexion prévue par e-mail + mot de passe).
+- Expiration OTP e-mail : 3600 secondes ; longueur OTP : 8 chiffres (paramètres affichés, fonctionnalité OTP non activée).
+- Protection contre les mots de passe compromis : indisponible sur l'offre Free selon l'indication affichée par le tableau de bord (fonctionnalité annoncée Pro et supérieur).
+
+### Règle complémentaire dans l'interface Carnet HS
+
+Lors de la création du compte, afficher une consigne explicite demandant à l'utilisateur de choisir un mot de passe unique, différent de celui de sa messagerie. Prévoir une confirmation du mot de passe, un contrôle de robustesse et un mécanisme d'affichage/masquage. Carnet HS ne demande jamais et ne stocke jamais le mot de passe de la messagerie. Cette consigne est pédagogique : Supabase ne peut pas comparer le mot de passe Carnet HS à celui d'un autre service.
+
+### Étape suivante
+
+Configurer les URL du site et les URL de redirection autorisées dans Authentication > URL Configuration, en utilisant uniquement l'adresse GitHub Pages DEV :
+`https://petitle-pod5.github.io/carnet-hs-dev/`
+
+Ne pas ajouter l'URL de production à ce projet DEV. Après cette étape, configurer les modèles d'e-mails de confirmation et de récupération, puis préparer le schéma PostgreSQL et les politiques RLS avant d'intégrer l'authentification à l'application.
