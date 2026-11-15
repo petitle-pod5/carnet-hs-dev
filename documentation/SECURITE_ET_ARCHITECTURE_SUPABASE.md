@@ -169,3 +169,15 @@ La requête de comptage retourne exactement 17 policies sur les six tables :
 - `validations` : 2
 
 Le total et la répartition correspondent au script de migration. La présence des policies est confirmée ; leur comportement réel doit encore être vérifié par des tests d'accès avec deux comptes authentifiés distincts.
+
+
+### Revue visuelle des conditions des 17 policies — 15 novembre 2026
+
+Les captures de pg_policies montrent les conditions `USING` / `WITH CHECK` des policies et leur cohérence générale avec l'isolation par `auth.uid()` :
+- profils : `id = auth.uid()` pour SELECT, INSERT et UPDATE ;
+- missions : `user_id = auth.uid()` pour SELECT, INSERT, UPDATE et DELETE ;
+- heures supplémentaires : `user_id = auth.uid()` pour SELECT, INSERT, UPDATE et DELETE ;
+- audit : SELECT limité à `user_id = auth.uid()`, INSERT contrôlé par le propriétaire et l'acteur ;
+- reçus de synchronisation : SELECT et INSERT limités à `user_id = auth.uid()` ;
+- validations : SELECT limité au propriétaire ; INSERT en auto-déclaration, avec contrôle du compte validateur.
+La fin de l'expression de `validations_insert_self` est tronquée dans la capture ; sa condition complète doit être relue directement dans SQL avant de certifier le détail. Les tests d'isolation entre deux comptes restent à effectuer. L'application DEV n'est pas encore connectée à Supabase à ce stade.
