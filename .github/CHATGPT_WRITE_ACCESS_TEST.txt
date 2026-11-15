@@ -1,0 +1,1 @@
+Temporary write-access verification for Carnet HS DEV. This file is intended to be deleted immediately after the test.
