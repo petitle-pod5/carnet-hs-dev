@@ -106,3 +106,32 @@ Ne pas ajouter l'URL de production à ce projet DEV. Après cette étape, config
 - Un fournisseur SMTP externe sera nécessaire avant les tests avec des adresses de bêta-testeurs et avant toute mise en service publique.
 - Brevo reste une piste à évaluer, non choisie ni configurée à ce stade. Aucun identifiant SMTP n'a été saisi.
 - Ne pas désactiver la confirmation d'e-mail pour contourner ces limites.
+
+
+## Schéma SQL initial préparé — 15 novembre 2026
+
+Fichier de migration ajouté au dépôt DEV :
+`supabase/migrations/20261115_000001_initial_schema_rls.sql`
+
+Il prépare les tables :
+- `profiles` : profil vide créé automatiquement après inscription Auth.
+- `missions` : informations de mission et coordonnées de contact.
+- `overtime_entries` : périodes d'heures supplémentaires.
+- `validations` : trace des validations.
+- `audit_events` : journal d'événements non modifiable par le rôle authentifié.
+- `sync_receipts` : identifiants de réception pour éviter les doublons de synchronisation.
+
+RLS est activée sur les six tables. Les politiques limitent les lectures/écritures des utilisateurs authentifiés à leurs propres lignes. Les heures sont liées à une mission appartenant au même utilisateur via une clé étrangère composée.
+
+### Limite volontaire concernant la validation
+
+La migration n'autorise pour l'instant que la validation auto-déclarée par le compte connecté (`self_recorded`). Elle ne donne aucun accès à un chef d'équipe. La validation par un chef authentifié et la délégation de droits restent à concevoir et à tester avant activation ; ne pas présenter une auto-déclaration comme une validation indépendante du chef.
+
+### Déploiement et validation
+
+- Le fichier SQL est préparé dans GitHub DEV, mais n'a pas encore été exécuté dans Supabase.
+- Avant exécution, vérifier que le tableau de bord affiche bien le projet `carnet-hs-dev` et sa base de données DEV.
+- Exécuter la migration dans SQL Editor uniquement après confirmation visuelle du projet.
+- Après exécution, vérifier les six tables, l'état RLS et les policies.
+- Effectuer des tests avec deux comptes authentifiés distincts : le compte A ne doit jamais lire, modifier ou supprimer les données du compte B, et inversement.
+- La sécurité n'est pas considérée comme validée tant que ces tests négatifs et positifs ne sont pas passés.
