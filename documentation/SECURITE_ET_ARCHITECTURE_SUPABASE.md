@@ -228,3 +228,14 @@ Configuration Supabase à vérifier dans Authentication > URL Configuration :
 - Redirect URL autorisée : `https://petitle-pod5.github.io/carnet-hs-dev/`
 
 Le lien de confirmation copié dans la conversation contenait un access token et un refresh token. Session à considérer comme exposée : révoquer les sessions de ce compte avant de continuer les tests. Un sign-out global révoque les refresh tokens, mais un access token JWT déjà émis peut rester valide jusqu'à son expiration ; cette limite est documentée par Supabase.
+
+
+## Amélioration ergonomique — affichage du mot de passe — 15 novembre 2026
+
+Commit DEV : `a282cce15ebf53093e13df7cbf2731fac0c5b1f8`.
+
+Ajout de boutons Afficher/Masquer sur les deux champs du formulaire d'authentification :
+- mot de passe lors de la connexion ou de l'inscription ;
+- confirmation du mot de passe lors de l'inscription.
+
+Le bouton bascule uniquement le type du champ entre `password` et `text`. La valeur saisie n'est ni modifiée ni transmise différemment. Contrôle clavier possible comme les autres boutons.
