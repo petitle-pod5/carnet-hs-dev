@@ -282,3 +282,61 @@ Revue du fichier `index.html` effectuée sans modification du code ni exécution
 
 ### Limites de cette revue
 Il s'agit d'une inspection statique du code et de la documentation. Aucun test multi-comptes, aucune requête de contrôle sur les données réelles et aucun test sur appareil secondaire n'ont été exécutés pendant cette revue. Les constats ne remplacent pas une recette fonctionnelle ou un audit de sécurité complet.
+
+## Préparation technique — synchronisation et validation indépendante
+
+Date : 15 novembre 2026
+Statut : étude préparatoire uniquement — aucune migration ni modification applicative exécutée.
+
+### A. Synchronisation des heures supplémentaires
+
+**État de départ confirmé :** `overtime_entries` contient déjà les colonnes `id`, `user_id`, `mission_id`, `started_at`, `ended_at`, `note`, `created_at`, `updated_at`. La table `sync_receipts` contient une contrainte unique `(user_id, operation_id)`. Les heures de l'application restent toutefois enregistrées dans `localStorage` ; aucun flux de synchronisation n'est implémenté dans `index.html`.
+
+**Flux recommandé à concevoir :**
+1. À la fin d'une HS, créer un identifiant UUID stable côté appareil et conserver l'entrée dans le stockage local.
+2. Lui attribuer un état local explicite : `pending`, `syncing`, `synced` ou `error`, sans jamais retirer la copie locale avant confirmation serveur.
+3. À la reconnexion, envoyer les opérations en attente avec leur identifiant stable. L'enregistrement serveur doit être idempotent : une même opération rejouée ne crée jamais une seconde HS.
+4. Utiliser `sync_receipts` comme mécanisme de déduplication seulement après avoir défini précisément la transaction serveur. La table actuelle ne suffit pas à elle seule à garantir une écriture atomique de l'HS et de son reçu.
+5. Après confirmation du serveur, marquer l'entrée comme synchronisée. En cas d'échec, conserver les données et l'état d'erreur pour une nouvelle tentative.
+6. Charger les HS distantes à la connexion et fusionner avec la file locale sans écraser une entrée locale plus récente ou non synchronisée.
+7. Prévoir les cas d'édition/suppression, les missions expirées, les HS en cours sans heure de fin, les conflits et les changements d'appareil.
+
+**Décisions techniques à prendre avant codage :**
+- Générer l'UUID local à la création de l'HS et le conserver à chaque tentative.
+- Définir si une HS terminée est immuable ou modifiable ; privilégier un événement de correction audité plutôt qu'une modification silencieuse après validation.
+- Définir la stratégie d'upload transactionnel (fonction PostgreSQL/RPC ou autre mécanisme serveur atomique) afin d'éviter une HS créée sans reçu ou un reçu sans HS.
+- Définir les règles de conservation et de récupération des données locales historiques avant toute migration.
+- Définir le traitement des doublons déjà présents dans les appareils et les anciennes données V3.4.1.
+
+**Recette minimale :** création hors ligne, reconnexion, envoi réussi, répétition de la même opération, coupure pendant l'envoi, redémarrage navigateur, connexion sur un second appareil, absence de doublon, absence de perte et isolation entre deux comptes.
+
+### B. Validation indépendante par le chef d'équipe
+
+**État de départ confirmé :** la table `validations` accepte uniquement `validation_mode = 'self_recorded'` et exige `validator_user_id = auth.uid()`. Il n'existe pas encore de table de délégation/autorisation des chefs dans la migration initiale. Le bouton actuel enregistre une validation locale à partir du nom renseigné dans le profil ; ce n'est pas une approbation indépendante.
+
+**Modèle recommandé à concevoir :**
+1. Le salarié conserve la saisie et la transmission de ses HS.
+2. Le chef d'équipe dispose de son propre compte Auth ; il ne partage jamais le compte du salarié.
+3. Une autorisation explicite relie le compte du chef à une mission ou à un périmètre précis, avec dates de validité et révocation possible.
+4. Le chef consulte uniquement les éléments qui lui sont attribués et peut approuver ou refuser avec commentaire facultatif.
+5. Le serveur vérifie l'identité, l'autorisation active, le périmètre de la mission et l'état de l'entrée. Le contrôle ne doit pas reposer sur le JavaScript du navigateur.
+6. Chaque décision est ajoutée comme événement non silencieusement modifiable : auteur authentifié, date serveur, entrée/journée concernée, résultat et commentaire. Une correction ultérieure crée un nouvel événement audité.
+7. Le salarié voit clairement l'état : en attente, approuvé, refusé ou à corriger. Une auto-déclaration ne doit jamais être affichée comme une validation par un chef.
+
+**Objets de base de données à étudier avant migration :** une table de délégation/affectation des validateurs (chef, mission, période, statut, créateur) et une évolution contrôlée de `validations` pour distinguer l'auto-déclaration et l'approbation indépendante. Les politiques RLS et contraintes doivent être conçues avec des tests négatifs ; ne pas ajouter de policy permissive générique.
+
+**Recette minimale :** chef autorisé peut consulter et décider ; chef non autorisé ne voit rien et ne peut rien valider ; salarié ne peut pas se faire passer pour le chef ; délégation expirée/révoquée refusée ; décision horodatée et traçable ; tentative de modification/suppression directe refusée.
+
+### C. Ordre de réalisation proposé
+
+1. Stabiliser les tests d'authentification et d'isolation à deux comptes.
+2. Définir le modèle de données et les règles métier de synchronisation, puis faire valider le schéma avant migration.
+3. Implémenter la synchronisation des HS sur DEV avec conservation locale et idempotence.
+4. Effectuer la recette hors ligne/en ligne et multi-appareils.
+5. Concevoir séparément les délégations de chefs et le modèle de validation indépendante.
+6. Ajouter les migrations et politiques RLS de validation uniquement après revue et tests de sécurité.
+7. Ne préparer un passage en production qu'après recette complète et accord explicite.
+
+### Limites
+
+Ce document est une proposition technique préparatoire. Aucun schéma SQL, policy RLS, code applicatif ou donnée Supabase n'a été modifié par cette étude. Les choix métier et le schéma définitif restent à valider avant implémentation.
