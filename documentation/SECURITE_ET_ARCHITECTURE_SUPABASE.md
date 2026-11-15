@@ -189,3 +189,27 @@ La condition `WITH CHECK` a été affichée en trois segments dans Supabase et c
 `auth.uid() = user_id AND validator_user_id = auth.uid() AND validation_mode = 'self_recorded'`.
 
 Ainsi, dans cette première version, un utilisateur authentifié ne peut insérer qu'une validation rattachée à son propre compte, en se déclarant lui-même validateur, et uniquement en mode `self_recorded`. Cela ne constitue pas une validation indépendante par le chef d'équipe ; celle-ci reste désactivée jusqu'à conception d'une délégation/authentification appropriée.
+
+
+## Première intégration Supabase dans l'application DEV — 15 novembre 2026
+
+Commit DEV : `db15163fe694f9eb8de71f9080f1f2a4b1c41920`.
+
+Le fichier `index.html` de `petitle-pod5/carnet-hs-dev` contient désormais :
+- chargement de la bibliothèque JavaScript Supabase v2 depuis jsDelivr ;
+- client configuré avec l'URL du projet DEV et la clé Publishable (aucune clé secrète/service-role) ;
+- interface de création de compte et de connexion par e-mail/mot de passe ;
+- confirmation du mot de passe à l'inscription et rappel de choisir un mot de passe unique, différent de celui de la messagerie ;
+- contrôle côté interface de 12 caractères minimum avec minuscules, majuscules, chiffres et symbole (Supabase reste l'autorité serveur pour les règles configurées) ;
+- demande de réinitialisation du mot de passe ;
+- déconnexion ;
+- stockage local des données de l'application séparé par identifiant Auth Supabase ;
+- lecture et enregistrement du profil et de la mission dans les tables `profiles` et `missions`, protégées par RLS.
+
+### Limites explicites de cette première étape
+
+- Les heures supplémentaires, validations et journaux de l'interface restent encore locaux ; leur synchronisation vers `overtime_entries`, `validations` et `audit_events` n'est pas encore intégrée.
+- Les anciennes données locales globales V3.4.1 sont laissées intactes et ne sont pas importées automatiquement dans un compte, afin d'éviter tout mélange entre utilisateurs. Une procédure de migration contrôlée devra être conçue.
+- Le code a été poussé sur le dépôt DEV uniquement. La production `petitle-pod5/carnet-hs` n'a pas été modifiée.
+- L'intégration doit maintenant être testée sur la page GitHub Pages DEV : chargement de la page, inscription, réception/confirmation e-mail, connexion, création du profil vide, enregistrement/lecture du profil, déconnexion et reconnexion.
+- Ne pas annoncer que toutes les données Carnet HS sont déjà isolées côté serveur tant que la synchronisation des HS/validations et les tests d'isolation entre deux comptes ne sont pas terminés.
