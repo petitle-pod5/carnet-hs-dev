@@ -261,3 +261,24 @@ L'utilisateur a demandé et validé l'ajout d'un contrôle Afficher/Masquer sur 
 
 ### Règle de suivi
 Toute nouvelle idée ou évolution explicitement validée par l'utilisateur doit être ajoutée au présent mémo DEV, avec sa date, son périmètre, son statut (validé / à tester / en attente) et, si disponible, le commit correspondant. La production reste hors périmètre tant qu'une migration n'a pas été explicitement autorisée.
+
+
+## Revue statique du code DEV — 15 novembre 2026
+
+Revue du fichier `index.html` effectuée sans modification du code ni exécution de tests en conditions réelles.
+
+### Points confirmés dans le code
+- L'authentification utilise le client Supabase JS v2 et les comptes sont associés à un espace local nommé avec l'identifiant Supabase de l'utilisateur.
+- Le profil et la mission principale sont lus depuis Supabase à la connexion et écrits lors de l'enregistrement du profil.
+- Les heures supplémentaires, validations et événements d'audit sont encore stockés dans le navigateur ; aucun appel d'écriture vers `overtime_entries`, `validations` ou `audit_events` n'a été trouvé dans le code examiné.
+- La validation affichée comme validation du chef d'équipe est actuellement enregistrée par l'utilisateur connecté à partir du nom saisi dans son profil. Elle ne constitue donc pas encore une validation indépendante/authentifiée du chef d'équipe.
+- Le message d'interface distingue bien le profil lié à Supabase et les heures qui restent locales.
+
+### Points de vigilance à tester / corriger avant extension
+1. **Restauration des données historiques :** le code de changement de compte utilise un espace local vierge par utilisateur. L'ancien stockage global n'est pas importé automatiquement. Prévoir une migration volontaire et contrôlée si des utilisateurs possèdent déjà des HS locales.
+2. **Chargement du compte :** `activateSession` charge le profil distant avant d'afficher l'application. Tester les erreurs réseau, la reprise après échec et les événements de session afin d'éviter un écran bloqué ou un état incohérent.
+3. **Validation chef d'équipe :** concevoir un véritable parcours d'approbation séparé, avec identité du validateur, autorisation serveur et traçabilité. Ne pas présenter la validation actuelle comme indépendante.
+4. **Synchronisation des HS :** concevoir l'envoi idempotent, la reprise hors ligne, les conflits et les accusés de réception avant d'écrire dans les tables correspondantes.
+
+### Limites de cette revue
+Il s'agit d'une inspection statique du code et de la documentation. Aucun test multi-comptes, aucune requête de contrôle sur les données réelles et aucun test sur appareil secondaire n'ont été exécutés pendant cette revue. Les constats ne remplacent pas une recette fonctionnelle ou un audit de sécurité complet.
