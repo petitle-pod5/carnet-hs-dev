@@ -33,8 +33,8 @@ table{width:100%;border-collapse:collapse;font-size:13px}th,td{padding:8px;borde
 <section id="authPanel" class="card" style="max-width:520px;margin:18px auto">
 <h2>🔐 Accès à Carnet HS</h2><p id="authNotice" class="small">Connecte-toi ou crée ton compte personnel.</p>
 <label>Adresse e-mail</label><input id="authEmail" type="email" autocomplete="email" placeholder="toi@exemple.fr">
-<label>Mot de passe Carnet HS</label><input id="authPassword" type="password" autocomplete="current-password" placeholder="12 caractères minimum">
-<div id="signupExtra" class="hidden"><label>Confirmer le mot de passe</label><input id="authPasswordConfirm" type="password" autocomplete="new-password" placeholder="Saisis à nouveau ton mot de passe">
+<label>Mot de passe Carnet HS</label><div style="display:flex;gap:8px;align-items:center"><input id="authPassword" type="password" autocomplete="current-password" placeholder="12 caractères minimum" style="flex:1;min-width:0"><button type="button" class="secondary" onclick="togglePasswordVisibility('authPassword',this)" aria-label="Afficher le mot de passe" style="padding:10px 14px;font-size:14px">Afficher</button></div>
+<div id="signupExtra" class="hidden"><label>Confirmer le mot de passe</label><div style="display:flex;gap:8px;align-items:center"><input id="authPasswordConfirm" type="password" autocomplete="new-password" placeholder="Saisis à nouveau ton mot de passe" style="flex:1;min-width:0"><button type="button" class="secondary" onclick="togglePasswordVisibility('authPasswordConfirm',this)" aria-label="Afficher la confirmation du mot de passe" style="padding:10px 14px;font-size:14px">Afficher</button></div>
 <p class="small"><b>Sécurité :</b> choisis un mot de passe unique, différent de celui de ta messagerie. Ne réutilise jamais le mot de passe de ton e-mail. Minimum 12 caractères, avec minuscules, majuscules, chiffres et symbole. Carnet HS ne te demandera jamais le mot de passe de ta messagerie.</p></div>
 <div class="buttons"><button id="authPrimary" class="blue" type="button" onclick="submitAuth()">Se connecter</button><button id="authMode" class="secondary" type="button" onclick="toggleAuthMode()">Créer un compte</button></div>
 <button id="authReset" class="secondary" style="width:100%;margin-top:10px" type="button" onclick="resetAuthPassword()">Mot de passe oublié ?</button>
@@ -194,6 +194,13 @@ function save(){autoBackup();localStorage.setItem(KEY,JSON.stringify(data));rend
 function blankData(){return {profile:{userId:"",agency:"",employer:"",workplace:"",manager:"",managerEmail:"",agencyEmail:""},entries:[],validations:{},audit:[]};}
 function setAuthFeedback(message,isError=false){const el=document.getElementById("authFeedback");el.textContent=message;el.style.color=isError?"#b91c1c":"#166534";}
 function toggleAuthMode(){signupMode=!signupMode;document.getElementById("signupExtra").classList.toggle("hidden",!signupMode);document.getElementById("authPrimary").textContent=signupMode?"Créer mon compte":"Se connecter";document.getElementById("authMode").textContent=signupMode?"J'ai déjà un compte":"Créer un compte";document.getElementById("authReset").classList.toggle("hidden",signupMode);document.getElementById("authPassword").setAttribute("autocomplete",signupMode?"new-password":"current-password");document.getElementById("authNotice").textContent=signupMode?"Crée ton compte avec ton adresse e-mail et un mot de passe propre à Carnet HS.":"Connecte-toi à ton compte Carnet HS.";setAuthFeedback("");}
+function togglePasswordVisibility(inputId,button){
+ const input=document.getElementById(inputId);
+ const visible=input.type==="password";
+ input.type=visible?"text":"password";
+ button.textContent=visible?"Masquer":"Afficher";
+ button.setAttribute("aria-label",visible?"Masquer le mot de passe":"Afficher le mot de passe");
+}
 function passwordIsStrong(p){return p.length>=12&&/[a-z]/.test(p)&&/[A-Z]/.test(p)&&/[0-9]/.test(p)&&/[^A-Za-z0-9]/.test(p);}
 async function submitAuth(){
  const email=document.getElementById("authEmail").value.trim(),password=document.getElementById("authPassword").value;
