@@ -213,3 +213,18 @@ Le fichier `index.html` de `petitle-pod5/carnet-hs-dev` contient désormais :
 - Le code a été poussé sur le dépôt DEV uniquement. La production `petitle-pod5/carnet-hs` n'a pas été modifiée.
 - L'intégration doit maintenant être testée sur la page GitHub Pages DEV : chargement de la page, inscription, réception/confirmation e-mail, connexion, création du profil vide, enregistrement/lecture du profil, déconnexion et reconnexion.
 - Ne pas annoncer que toutes les données Carnet HS sont déjà isolées côté serveur tant que la synchronisation des HS/validations et les tests d'isolation entre deux comptes ne sont pas terminés.
+
+
+## Correction du retour des e-mails Supabase — 15 novembre 2026
+
+Le premier test d'inscription a confirmé l'envoi du courriel et la validation de l'adresse, mais le lien renvoyait à la racine GitHub Pages (`https://petitle-pod5.github.io/`) au lieu de l'application DEV.
+
+Correction poussée dans `index.html`, commit `1519d7a9159b1a1329f66996cda9ac2993b17392` :
+- `auth.signUp` transmet désormais explicitement `options.emailRedirectTo` vers `https://petitle-pod5.github.io/carnet-hs-dev/` ;
+- la réinitialisation du mot de passe utilise également cette URL de retour.
+
+Configuration Supabase à vérifier dans Authentication > URL Configuration :
+- Site URL : `https://petitle-pod5.github.io/carnet-hs-dev/`
+- Redirect URL autorisée : `https://petitle-pod5.github.io/carnet-hs-dev/`
+
+Le lien de confirmation copié dans la conversation contenait un access token et un refresh token. Session à considérer comme exposée : révoquer les sessions de ce compte avant de continuer les tests. Un sign-out global révoque les refresh tokens, mais un access token JWT déjà émis peut rester valide jusqu'à son expiration ; cette limite est documentée par Supabase.
