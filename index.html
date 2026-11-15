@@ -20,7 +20,12 @@ textarea{min-height:65px}.status{text-align:center;padding:12px;border-radius:12
 table{width:100%;border-collapse:collapse;font-size:13px}th,td{padding:8px;border-bottom:1px solid #e5e7eb;text-align:left;vertical-align:top}
 .small{font-size:12px;color:#6b7280}.ok{color:#15803d;font-weight:700}.warn{color:#b45309;font-weight:700}
 .profile{background:#f9fafb;border-radius:12px;padding:12px;line-height:1.7}.tag{display:inline-block;padding:5px 8px;border-radius:8px;background:#eef2ff;margin:2px;font-size:12px}
-.hidden{display:none}@media(max-width:560px){.grid{grid-template-columns:1fr}}
+.hidden{display:none}
+.popup-backdrop{position:fixed;inset:0;background:#111827aa;display:flex;align-items:center;justify-content:center;padding:18px;z-index:20}
+.popup-backdrop.hidden{display:none}.popup-box{width:min(100%,420px);background:#fff;border-radius:18px;padding:22px;box-shadow:0 18px 60px #0004}
+.popup-box h2{margin:0 0 12px}.popup-box p{white-space:pre-wrap;line-height:1.5;margin:0 0 20px}
+.popup-actions{display:flex;justify-content:flex-end;gap:10px}.popup-actions button{min-width:96px}
+@media(max-width:560px){.grid{grid-template-columns:1fr}.popup-actions button{flex:1}}
 </style>
 </head>
 <body>
@@ -116,7 +121,11 @@ table{width:100%;border-collapse:collapse;font-size:13px}th,td{padding:8px;borde
 <div class="small" style="margin-top:8px">Fais une sauvegarde avant cette opération.</div>
 </div>
 </main>
-
+<div id="appPopup" class="popup-backdrop hidden" role="presentation">
+<section class="popup-box" role="dialog" aria-modal="true" aria-labelledby="popupTitle" aria-describedby="popupMessage">
+<h2 id="popupTitle">Carnet HS</h2><p id="popupMessage"></p>
+<div class="popup-actions"><button id="popupCancel" class="secondary hidden" type="button">Annuler</button><button id="popupOk" class="blue" type="button">OK</button></div>
+</section></div>
 <script>
 const KEY="carnetHS_v3_4";
 const OLD_KEYS=["carnetHS_v3_3","carnetHS_v3_2"];
@@ -138,6 +147,21 @@ try{const savedActive=localStorage.getItem(ACTIVE_KEY);active=savedActive?JSON.p
 let historyOpen=false;
 let historyFilter="week";
 
+let popupResolver=null;
+function showPopup(message,confirmMode=false){
+ const layer=document.getElementById("appPopup"),ok=document.getElementById("popupOk"),cancel=document.getElementById("popupCancel");
+ document.getElementById("popupMessage").textContent=String(message);
+ cancel.classList.toggle("hidden",!confirmMode);ok.textContent=confirmMode?"Confirmer":"OK";layer.classList.remove("hidden");
+ return new Promise(resolve=>{
+  popupResolver=resolve;ok.focus();
+  const finish=value=>{if(!popupResolver)return;const done=popupResolver;popupResolver=null;layer.classList.add("hidden");ok.removeEventListener("click",onOk);cancel.removeEventListener("click",onCancel);document.removeEventListener("keydown",onKey);done(value)};
+  const onOk=()=>finish(true),onCancel=()=>finish(false);
+  const onKey=e=>{if(e.key==="Escape"&&confirmMode)finish(false);else if(e.key==="Enter")finish(true)};
+  ok.addEventListener("click",onOk);cancel.addEventListener("click",onCancel);document.addEventListener("keydown",onKey);
+ });
+}
+function notify(message){showPopup(message,false)}
+function askConfirm(message){return showPopup(message,true)}
 function latestBackup(){
  try{
   const backups=JSON.parse(localStorage.getItem(BACKUP_KEY)||"[]");
@@ -154,7 +178,7 @@ function autoBackup(){
 function save(){autoBackup();localStorage.setItem(KEY,JSON.stringify(data));render();}
 function val(id){return document.getElementById(id).value.trim()}
 function setv(id,v){document.getElementById(id).value=v||""}
-function profileOK(){return data.profile.userId&&data.profile.employer&&data.profile.manager}
+function profileOK(){return !!(data.profile.userId&&data.profile.agency&&data.profile.employer&&data.profile.workplace&&data.profile.manager)}
 function profileSuggestions(field){
  const values=[data.profile&&data.profile[field],...(data.entries||[]).map(e=>e.profile&&e.profile[field]),...(data.audit||[]).map(a=>a.profile&&a.profile[field])];
  return [...new Set(values.map(v=>String(v||"").trim()).filter(Boolean))].sort((a,b)=>a.localeCompare(b,"fr"));
@@ -172,22 +196,22 @@ function editProfile(){
 function cancelProfile(){document.getElementById("profileEditor").classList.add("hidden")}
 function saveProfile(){
  const p={userId:val("userId"),agency:val("agency"),employer:val("employer"),workplace:val("workplace"),manager:val("manager"),managerEmail:val("managerEmail"),agencyEmail:val("agencyEmail")};
- if(!p.userId||!p.employer||!p.manager){alert("Renseigne au minimum l'ID salarié, l'employeur et le chef d'équipe.");return}
+ if(!p.userId||!p.agency||!p.employer||!p.workplace||!p.manager){notify("Tous les champs du profil sont obligatoires : ID salarié, agence, employeur, lieu de travail et chef d'équipe.");return}
  data.profile=p;
  data.audit.unshift({at:new Date().toISOString(),action:"Profil enregistré",profile:{...p}});
  document.getElementById("profileEditor").classList.add("hidden");
  save();
 }
 function startHS(){
- if(!profileOK()){alert("Configure d'abord ton profil.");editProfile();return}
- if(active){alert("Une HS est déjà en cours.");return}
+ if(!profileOK()){notify("Complète ton profil avant d'enregistrer des heures supplémentaires.");editProfile();return}
+ if(active){notify("Une HS est déjà en cours.");return}
  active={start:new Date().toISOString(),note:val("note"),profile:{...data.profile}};
  localStorage.setItem(ACTIVE_KEY,JSON.stringify(active));
  document.getElementById("note").value="";
  render();
 }
 function stopHS(){
- if(!active){alert("Aucune HS en cours.");return}
+ if(!active){notify("Aucune HS en cours.");return}
  const end=new Date();
  data.entries.unshift({start:active.start,end:end.toISOString(),note:active.note,profile:active.profile});
  data.audit.unshift({at:end.toISOString(),action:"Création HS",start:active.start,end:end.toISOString(),profile:active.profile});
@@ -195,14 +219,14 @@ function stopHS(){
 }
 function localDateKey(d){return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0")}
 function validateDay(){
- if(active){alert("Termine d'abord l'HS en cours.");return}
- if(!profileOK()){alert("Configure d'abord ton profil.");return}
+ if(active){notify("Termine d'abord l'HS en cours.");return}
+ if(!profileOK()){notify("Complète d'abord ton profil.");editProfile();return}
  const today=localDateKey(new Date());
- if(data.validations[today]){alert("Cette journée est déjà validée.");return}
+ if(data.validations[today]){notify("Cette journée est déjà validée.");return}
  const validatedAt=new Date().toISOString();
  data.validations[today]={validatedAt,manager:data.profile.manager,role:"Chef d’équipe"};
  data.audit.unshift({at:validatedAt,action:"Validation chef d’équipe",date:today,manager:data.profile.manager,role:"Chef d’équipe"});
- save();alert("Journée validée par le chef d’équipe : "+data.profile.manager+".");
+ save();notify("Journée validée par le chef d’équipe : "+data.profile.manager+".");
 }
 function fmtDate(d){return new Intl.DateTimeFormat("fr-FR",{dateStyle:"short"}).format(d)}
 function fmtTime(d){return new Intl.DateTimeFormat("fr-FR",{hour:"2-digit",minute:"2-digit",second:"2-digit"}).format(d)}
@@ -240,15 +264,15 @@ function render(){
  document.getElementById("backupStatus").innerHTML=lb?`<span class="ok">🟢 Sauvegarde automatique active</span> — dernière copie : ${fmtDate(new Date(lb.savedAt))} à ${fmtTime(new Date(lb.savedAt))} — ${JSON.parse(localStorage.getItem(BACKUP_KEY)||"[]").length} version(s) conservée(s).`:'<span class="warn">🟠 Aucune sauvegarde automatique encore créée</span>';
  if(historyOpen)renderHistory();
 }
-function restoreBackup(){
+async function restoreBackup(){
  const backup=latestBackup();
- if(!backup||!backup.data){alert("Aucune sauvegarde exploitable n'est disponible.");return}
- if(!confirm("Restaurer la dernière sauvegarde ? Les données actuellement affichées seront remplacées."))return;
+ if(!backup||!backup.data){notify("Aucune sauvegarde exploitable n'est disponible.");return}
+ if(!(await askConfirm("Restaurer la dernière sauvegarde ? Les données actuellement affichées seront remplacées.")))return;
  autoBackup();
  try{
   const restored=JSON.parse(JSON.stringify(backup.data));
   if(!restored.profile||!Array.isArray(restored.entries)||!restored.validations||!Array.isArray(restored.audit)){
-   alert("La sauvegarde est incomplète ou invalide.");return;
+   notify("La sauvegarde est incomplète ou invalide.");return;
   }
   data=restored;
   localStorage.setItem(KEY,JSON.stringify(data));
@@ -256,23 +280,23 @@ function restoreBackup(){
   localStorage.removeItem(ACTIVE_KEY);
   render();
   if(historyOpen)renderHistory();
-  alert("Dernière sauvegarde restaurée.");
- }catch(e){alert("Impossible de restaurer cette sauvegarde : "+e.message)}
+  notify("Dernière sauvegarde restaurée.");
+ }catch(e){notify("Impossible de restaurer cette sauvegarde : "+e.message)}
 }
 function importJSONFile(input){
  const file=input&&input.files&&input.files[0];
  if(!file)return;
  const reader=new FileReader();
- reader.onload=function(){
+ reader.onload=async function(){
   try{
    const imported=JSON.parse(String(reader.result||""));
    if(!imported||typeof imported!=="object"||!imported.profile||!Array.isArray(imported.entries)||!imported.validations||typeof imported.validations!=="object"||!Array.isArray(imported.audit)){
-    alert("Fichier invalide : ce fichier ne semble pas être une sauvegarde Carnet HS.");return;
+    notify("Fichier invalide : ce fichier ne semble pas être une sauvegarde Carnet HS.");return;
    }
-   if(!confirm("Importer cette sauvegarde ? Les données actuellement affichées seront remplacées."))return;
+   if(!(await askConfirm("Importer cette sauvegarde ? Les données actuellement affichées seront remplacées.")))return;
    autoBackup();
    data={
-    profile:{userId:String(imported.profile.userId||""),agency:String(imported.profile.agency||""),employer:String(imported.profile.employer||""),workplace:String(imported.profile.workplace||""),manager:String(imported.profile.manager||"")},
+    profile:{userId:String(imported.profile.userId||""),agency:String(imported.profile.agency||""),employer:String(imported.profile.employer||""),workplace:String(imported.profile.workplace||""),manager:String(imported.profile.manager||""),managerEmail:String(imported.profile.managerEmail||""),agencyEmail:String(imported.profile.agencyEmail||"")},
     entries:imported.entries,
     validations:imported.validations,
     audit:imported.audit
@@ -282,11 +306,11 @@ function importJSONFile(input){
    localStorage.removeItem(ACTIVE_KEY);
    render();
    if(historyOpen)renderHistory();
-   alert("Sauvegarde importée avec succès.");
-  }catch(e){alert("Import impossible : le fichier JSON est invalide ou illisible.")}
+   notify("Sauvegarde importée avec succès.");
+  }catch(e){notify("Import impossible : le fichier JSON est invalide ou illisible.")}
   finally{input.value=""}
  };
- reader.onerror=function(){alert("Impossible de lire le fichier sélectionné.");input.value=""};
+ reader.onerror=function(){notify("Impossible de lire le fichier sélectionné.");input.value=""};
  reader.readAsText(file);
 }
 async function exportJSON(){
@@ -297,7 +321,7 @@ async function exportJSON(){
  const blob=new Blob([JSON.stringify(out,null,2)],{type:"application/json"});
  const stamp=now.getFullYear()+String(now.getMonth()+1).padStart(2,"0")+String(now.getDate()).padStart(2,"0")+"_"+String(now.getHours()).padStart(2,"0")+String(now.getMinutes()).padStart(2,"0")+String(now.getSeconds()).padStart(2,"0");
  const filename="carnet_HS_"+wk+"_"+stamp+".json";
- const organize=confirm("Souhaites-tu classer cette sauvegarde dans un dossier par semaine ISO ?\n\nOui : choisir un dossier de destination ; Carnet_HS puis "+wk+" seront créés dedans.\nNon : téléchargement classique.");
+ const organize=await askConfirm("Souhaites-tu classer cette sauvegarde dans un dossier par semaine ISO ?\n\nOui : choisir un dossier de destination ; Carnet_HS puis "+wk+" seront créés dedans.\nNon : téléchargement classique.");
  if(organize){
   if(window.showDirectoryPicker){
    try{
@@ -308,22 +332,22 @@ async function exportJSON(){
     const writable=await fileHandle.createWritable();
     await writable.write(blob);
     await writable.close();
-    alert("Sauvegarde enregistrée dans Carnet_HS/"+wk+"/"+filename);
+    notify("Sauvegarde enregistrée dans Carnet_HS/"+wk+"/"+filename);
     return;
    }catch(e){
     if(e&&e.name==="AbortError")return;
-    alert("La création du dossier n'a pas abouti dans ce navigateur. La sauvegarde sera proposée en téléchargement classique.");
+    notify("La création du dossier n'a pas abouti dans ce navigateur. La sauvegarde sera proposée en téléchargement classique.");
    }
   }else{
-   alert("Ce navigateur ne permet pas la création de dossiers depuis Carnet HS. La sauvegarde sera proposée en téléchargement classique.");
+   notify("Ce navigateur ne permet pas la création de dossiers depuis Carnet HS. La sauvegarde sera proposée en téléchargement classique.");
   }
  }
  download(filename,blob);
 }
 function exportCSV(){let csv="ID salarié;Agence;Employeur;Lieu;Chef d'équipe;Date;Début;Fin;Durée;Motif\n";data.entries.slice().reverse().forEach(e=>{let p=e.profile||data.profile;csv+=`"${p.userId}";"${p.agency}";"${p.employer}";"${p.workplace}";"${p.manager}";"${fmtDate(new Date(e.start))}";"${fmtTime(new Date(e.start))}";"${fmtTime(new Date(e.end))}";"${duration(new Date(e.end)-new Date(e.start))}";"${(e.note||"").replaceAll('"','""')}"\n`});download("carnet_HS.csv",new Blob(["\ufeff"+csv],{type:"text/csv;charset=utf-8"}))}
 function download(name,blob){const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000)}
-function resetData(){
- if(!confirm("Effacer TOUTES les données ? Une sauvegarde automatique sera conservée avant l'effacement."))return;
+async function resetData(){
+ if(!(await askConfirm("Effacer TOUTES les données ? Une sauvegarde automatique sera conservée avant l'effacement.")))return;
  autoBackup();
  const emptyData={profile:{userId:"",agency:"",employer:"",workplace:"",manager:""},entries:[],validations:{},audit:[]};
  data=emptyData;
@@ -342,6 +366,7 @@ window.addEventListener("online",render);window.addEventListener("offline",rende
 window.addEventListener("pagehide",()=>{if(active)localStorage.setItem(ACTIVE_KEY,JSON.stringify(active));});
 renderProfileSuggestions();
 render();
+if(!profileOK())editProfile();
 </script>
 </body>
 </html>
