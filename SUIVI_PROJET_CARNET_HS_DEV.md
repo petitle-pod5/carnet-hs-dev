@@ -240,3 +240,15 @@ Résultats visibles sur la capture :
 - Le privilège SQL SELECT n'est pas accordé au rôle anon sur les six tables.
 
 **Conclusion limitée :** le contrôle de configuration est cohérent avec la migration initiale. Il confirme l'activation de RLS, le nombre de policies et les privilèges SELECT affichés. Il ne teste pas les expressions réelles des policies ni les opérations SELECT/INSERT/UPDATE/DELETE sous deux sessions Auth distinctes. Les tests d'isolation backend restent à effectuer. Aucun changement de code, de policy, de schéma ou de donnée n'a été réalisé ; production inchangée.
+
+
+### Préparation des tests directs RLS — 16 novembre 2026
+
+- [x] Relire la migration SQL initiale directement dans le dépôt DEV.
+- [x] Établir la matrice des privilèges attendus par table et par opération.
+- [x] Préparer un protocole de tests positifs et négatifs avec deux sessions Auth.
+- [ ] Exécuter les lectures croisées A/B sur les six tables depuis des sessions authentifiées.
+- [ ] Exécuter les tests d'écriture croisée sur des lignes sentinelles temporaires, sans viser les données réelles.
+- [ ] Vérifier les opérations autorisées du propriétaire et nettoyer les seules lignes sentinelles créées pour le test.
+
+La préparation documentaire est consignée dans `documentation/SECURITE_ET_ARCHITECTURE_SUPABASE.md`. Revue statique uniquement : aucune requête d'écriture, aucun changement de policy, aucun changement applicatif ou de donnée Supabase. La production reste inchangée.
