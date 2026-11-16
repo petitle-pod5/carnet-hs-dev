@@ -424,3 +424,12 @@ L'utilisateur confirme avoir complété et enregistré son profil, effectué une
 **Conclusion limitée au scénario testé :** la persistance du profil et de la mission principale dans Supabase, puis leur récupération après reconnexion sur le même compte, sont confirmées par ce test utilisateur.
 
 **Tests restant à réaliser :** récupération sur un autre appareil/navigateur, isolation entre deux comptes distincts, tests d'accès non autorisé et gestion des erreurs réseau. Les HS, validations et événements d'audit restent hors de cette validation et leur synchronisation n'est pas encore confirmée.
+
+
+## Recette utilisateur — récupération du profil sur téléphone Android (16 novembre 2026)
+
+L'utilisateur confirme que le test sur son téléphone Android Oukitel WP55 Pro est concluant : en se connectant avec le même compte que sur son PC Windows 11, il retrouve correctement son profil et sa mission principale.
+
+**Conclusion :** la récupération du profil et de la mission principale est confirmée sur les deux environnements testés (PC Windows 11 et téléphone Android Oukitel WP55 Pro). Ce résultat valide le scénario multi-appareils pour ces appareils et ce compte. Il ne valide pas l'isolation entre deux comptes distincts, les contrôles d'accès non autorisé, les erreurs réseau ni la synchronisation des HS, validations ou événements d'audit.
+
+**Production :** aucune modification. **Code applicatif / Supabase :** aucune modification liée à cette recette ; seule la documentation DEV est mise à jour.
