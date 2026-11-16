@@ -51,7 +51,7 @@ Application DEV : https://petitle-pod5.github.io/carnet-hs-dev/
 |---|---:|---|---|
 | [x] | P2 | Vérifier l'ouverture de la version DEV après correction de redirection | Retour utilisateur positif |
 | [x] | P2 | Vérifier l'affichage des champs profil et des boutons de visibilité du mot de passe | Retour utilisateur positif |
-| [ ] | P1 | Enregistrer un profil, se déconnecter, puis vérifier sa récupération après reconnexion | Test de persistance distante |
+| [x] | P1 | Enregistrer un profil, se déconnecter, puis vérifier sa récupération après reconnexion | Test utilisateur confirmé : toutes les informations du profil ont été retrouvées après reconnexion (16/11/2026) |
 | [ ] | P1 | Vérifier la récupération du profil depuis un autre appareil / navigateur | À réaliser |
 | [ ] | P1 | Tester la création, modification et suppression d'une mission | Vérifier local et distant |
 | [ ] | P1 | Tester l'enregistrement d'heures en mode hors ligne | Vérifier qu'aucune donnée n'est perdue |
@@ -205,3 +205,10 @@ L'utilisateur valide le principe de ne pas imposer une collecte excessive de don
 - [x] Appliquer le même comportement au champ de confirmation à l'inscription.
 - [x] Modification poussée sur DEV uniquement : commit 89b6474e5a8dc4dd0a89a604871d785dd7de6ad6.
 - [x] Vérification utilisateur confirmée : rendu et fonctionnement de l'icône œil validés sur l'environnement testé (16/11/2026).
+
+
+### Recette de persistance du profil — résultat confirmé le 16 novembre 2026
+
+L'utilisateur confirme avoir enregistré les informations du profil, s'être déconnecté puis reconnecté avec le même compte, et avoir retrouvé toutes les informations. Le test de persistance du profil après reconnexion est donc marqué comme réussi.
+
+Reste à réaliser séparément : récupération du profil depuis un autre appareil ou navigateur, puis tests d'isolation entre deux comptes distincts. Cette réussite ne valide pas encore la synchronisation des HS, validations ou événements d'audit.
