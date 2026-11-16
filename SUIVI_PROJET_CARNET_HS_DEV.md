@@ -52,7 +52,8 @@ Application DEV : https://petitle-pod5.github.io/carnet-hs-dev/
 | [x] | P2 | Vérifier l'ouverture de la version DEV après correction de redirection | Retour utilisateur positif |
 | [x] | P2 | Vérifier l'affichage des champs profil et des boutons de visibilité du mot de passe | Retour utilisateur positif |
 | [x] | P1 | Enregistrer un profil, se déconnecter, puis vérifier sa récupération après reconnexion | Test utilisateur confirmé : toutes les informations du profil ont été retrouvées après reconnexion (16/11/2026) |
-| [ ] | P1 | Vérifier la récupération du profil depuis un autre appareil / navigateur | À réaliser |
+| [x] | P1 | Vérifier la récupération du profil depuis un autre appareil | Test utilisateur confirmé le 16/11/2026 : profil et mission principale récupérés sur PC Windows 11 et téléphone Android Oukitel WP55 Pro avec le même compte |
+| [ ] | P1 | Vérifier la récupération depuis un second navigateur distinct | À réaliser séparément si le besoin est confirmé |
 | [ ] | P1 | Tester la création, modification et suppression d'une mission | Vérifier local et distant |
 | [ ] | P1 | Tester l'enregistrement d'heures en mode hors ligne | Vérifier qu'aucune donnée n'est perdue |
 | [ ] | P1 | Tester la reprise après coupure réseau et les tentatives répétées | Vérifier l'absence de doublons |
@@ -211,4 +212,9 @@ L'utilisateur valide le principe de ne pas imposer une collecte excessive de don
 
 L'utilisateur confirme avoir enregistré les informations du profil, s'être déconnecté puis reconnecté avec le même compte, et avoir retrouvé toutes les informations. Le test de persistance du profil après reconnexion est donc marqué comme réussi.
 
-Reste à réaliser séparément : récupération du profil depuis un autre appareil ou navigateur, puis tests d'isolation entre deux comptes distincts. Cette réussite ne valide pas encore la synchronisation des HS, validations ou événements d'audit.
+Résultats confirmés : récupération du profil après reconnexion sur le même PC, puis récupération du profil et de la mission principale sur le téléphone Android Oukitel WP55 Pro avec le même compte (16/11/2026). Le test multi-appareils est donc réussi pour ces deux appareils. Restent les tests d'isolation entre deux comptes distincts, les accès non autorisés et les erreurs réseau. Cette réussite ne valide pas encore la synchronisation des HS, validations ou événements d'audit.
+
+
+### Recette multi-appareils — résultat confirmé le 16 novembre 2026
+
+L'utilisateur confirme avoir effectué le test sur son téléphone Android Oukitel WP55 Pro : le profil et la mission principale sont correctement récupérés avec le même compte que sur son PC Windows 11. Le scénario de récupération du profil entre PC et téléphone est marqué comme réussi. Aucun test d'isolation entre comptes distincts n'est couvert par ce résultat.
