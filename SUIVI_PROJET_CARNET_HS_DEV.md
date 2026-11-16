@@ -25,7 +25,7 @@ Application DEV : https://petitle-pod5.github.io/carnet-hs-dev/
 | [x] | P2 | Afficher / masquer le mot de passe et sa confirmation | Commit `a282cce15ebf53093e13df7cbf2731fac0c5b1f8` |
 | [x] | P2 | Réinitialisation du mot de passe | Fonction ajoutée ; parcours complet à revalider |
 | [x] | P1 | Isoler le stockage local par identifiant utilisateur | Ajouté au code ; test multi-comptes à réaliser |
-| [ ] | P1 | Tester inscription, déconnexion et reconnexion avec deux comptes distincts | Vérifier qu'aucune donnée locale ne fuit d'un compte à l'autre |
+| [x] | P1 | Tester inscription, déconnexion et reconnexion avec deux comptes distincts | Test fonctionnel réussi le 16/11/2026 sur DEV : compte B affiche un profil vierge ; après retour au compte A, profil original retrouvé |
 | [ ] | P1 | Vérifier la gestion des sessions et les retours d'authentification | Contrôler les cas de rechargement et de session expirée |
 
 ## 2. Supabase et sécurité des données
@@ -36,7 +36,7 @@ Application DEV : https://petitle-pod5.github.io/carnet-hs-dev/
 | [x] | P1 | Activer RLS sur les six tables | Présence vérifiée |
 | [x] | P1 | Créer et examiner les 17 politiques RLS | Répartition et conditions examinées |
 | [x] | P1 | Vérifier la règle d'insertion de validation personnelle | `validations_insert_self` limite l'insertion à sa propre validation déclarative |
-| [ ] | P1 | Effectuer les tests d'isolation avec deux comptes réels | Indispensable avant de considérer la sécurité comme validée |
+| [~] | P1 | Effectuer les tests d'isolation avec deux comptes réels | Test fonctionnel de séparation des profils réussi le 16/11/2026 ; tests directs des policies RLS, accès non autorisés et droits table par table restent à réaliser |
 | [ ] | P1 | Tester les droits de lecture / écriture de chaque table | Confirmer les droits attendus et les refus |
 | [ ] | P1 | Tester les cas d'accès non autorisé et les erreurs réseau | Documenter les résultats |
 | [ ] | P2 | Définir et développer la validation indépendante par le chef d'équipe | Non prise en charge par la règle actuelle de validation personnelle |
@@ -218,3 +218,12 @@ Résultats confirmés : récupération du profil après reconnexion sur le même
 ### Recette multi-appareils — résultat confirmé le 16 novembre 2026
 
 L'utilisateur confirme avoir effectué le test sur son téléphone Android Oukitel WP55 Pro : le profil et la mission principale sont correctement récupérés avec le même compte que sur son PC Windows 11. Le scénario de récupération du profil entre PC et téléphone est marqué comme réussi. Aucun test d'isolation entre comptes distincts n'est couvert par ce résultat.
+
+
+### Recette fonctionnelle à deux comptes — résultat confirmé le 16 novembre 2026
+
+- [x] Connexion au compte B : l'utilisateur retrouve un profil vierge, sans les informations du compte A.
+- [x] Retour au compte A : l'utilisateur retrouve son profil original.
+- [x] Le test fonctionnel de séparation et de conservation des profils est réussi sur DEV.
+- [ ] Tester séparément les policies RLS et les accès directs non autorisés avec deux sessions/comptes ; le test d'interface ne suffit pas à certifier toute la sécurité backend.
+
