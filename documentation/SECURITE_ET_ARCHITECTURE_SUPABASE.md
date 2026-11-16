@@ -361,3 +361,33 @@ Prévoir un enregistrement d'abonnement rattaché à l'identifiant utilisateur A
 Les changements de formule ne doivent pas provoquer de duplication de compte ni de migration destructive des données. Les transitions entre offres devront être testées avec conservation de l'historique et contrôle des droits avant/après changement.
 
 **Statut :** principe fonctionnel validé le 16 novembre 2026. Le fournisseur de paiement, le schéma précis, les règles de facturation et le code ne sont pas encore choisis ou implémentés. Cette décision n'a entraîné aucune modification de l'application ni de Supabase. La production reste inchangée.
+
+
+## Identifiant client central — prévention des essais multiples
+
+Décision produit validée le 16 novembre 2026 : Carnet HS doit disposer d'un identifiant client central, indépendant de l'adresse e-mail. Les identifiants de connexion, les périodes d'essai et les abonnements seront rattachés à ce client central.
+
+### Objectifs et séparation des concepts
+
+- **Client** : identité commerciale centrale de la personne ou de l'organisation.
+- **Compte(s) de connexion** : identifiants Auth permettant d'accéder au service ; l'adresse e-mail n'est pas l'identité commerciale à elle seule.
+- **Essai** : droit temporaire attribué et historisé au niveau du client central, afin qu'une nouvelle adresse e-mail ne réinitialise pas automatiquement la période gratuite.
+- **Abonnement** : formule et état de facturation rattachés au client central, tout en donnant accès au compte utilisateur autorisé.
+
+### Garanties à concevoir
+
+1. Un nouvel e-mail ne doit pas suffire à créer un nouvel essai gratuit pour le même client.
+2. Le rattachement ou la fusion de comptes doit exiger une preuve de contrôle des comptes concernés et une procédure sûre ; ne jamais fusionner automatiquement sur la seule base d'un nom ou d'une adresse ressemblante.
+3. La récupération d'accès et le changement de coordonnées doivent être prévus pour éviter de bloquer un client légitime.
+4. Les décisions d'attribution d'essai et les changements d'abonnement doivent être journalisés côté serveur et protégés contre les répétitions ou notifications frauduleuses.
+5. Collecter le minimum de données personnelles nécessaire, documenter finalités et durées de conservation, et prévoir les droits RGPD applicables.
+6. Ne pas traiter l'empreinte d'un appareil comme preuve unique : appareils partagés, réinitialisés ou remplacés rendent cette méthode peu fiable et potentiellement intrusive.
+7. Ne pas stocker les numéros complets de carte bancaire ni les codes de sécurité. Utiliser un prestataire de paiement et conserver uniquement les références/tokenisations nécessaires.
+
+### Méthode de vérification — encore à arbitrer
+
+Le téléphone vérifié et/ou une référence de moyen de paiement tokenisée peuvent être étudiés comme signaux supplémentaires, mais aucun ne doit être adopté sans évaluer les faux positifs, les cas de changement de numéro ou de moyen de paiement, l'accessibilité et la proportionnalité RGPD. L'adresse e-mail seule ne suffit pas à établir l'unicité d'un client.
+
+### Statut
+
+Le principe d'un identifiant client central indépendant de l'e-mail est validé. Le modèle de données, la méthode de vérification, les règles de rattachement de plusieurs comptes et la durée de l'essai restent à définir. Aucun code, schéma SQL, policy RLS ni paramètre Supabase n'a été modifié à la suite de cette décision. La production reste inchangée.
