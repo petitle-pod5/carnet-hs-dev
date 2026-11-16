@@ -433,3 +433,17 @@ L'utilisateur confirme que le test sur son téléphone Android Oukitel WP55 Pro 
 **Conclusion :** la récupération du profil et de la mission principale est confirmée sur les deux environnements testés (PC Windows 11 et téléphone Android Oukitel WP55 Pro). Ce résultat valide le scénario multi-appareils pour ces appareils et ce compte. Il ne valide pas l'isolation entre deux comptes distincts, les contrôles d'accès non autorisé, les erreurs réseau ni la synchronisation des HS, validations ou événements d'audit.
 
 **Production :** aucune modification. **Code applicatif / Supabase :** aucune modification liée à cette recette ; seule la documentation DEV est mise à jour.
+
+
+## Recette utilisateur — séparation fonctionnelle de deux comptes (16 novembre 2026)
+
+L'utilisateur a effectué le test sur Carnet HS DEV avec deux comptes Auth distincts et deux adresses e-mail :
+
+1. Connexion au deuxième compte (compte B) : un profil vierge est affiché, sans reprise des informations du compte A.
+2. Retour au compte initial (compte A) : le profil original est correctement retrouvé.
+
+**Résultat :** test fonctionnel utilisateur réussi pour la séparation et la conservation des profils entre ces deux comptes dans le parcours testé.
+
+**Limite importante :** ce test d'interface ne constitue pas à lui seul une vérification exhaustive des politiques RLS. Les tests directs des droits de lecture/écriture table par table, des accès non autorisés et des tentatives de contournement avec deux sessions distinctes restent à effectuer avant de considérer la sécurité backend comme validée.
+
+Aucun code applicatif, schéma SQL, policy RLS ou paramètre Supabase n'a été modifié à la suite de cette recette. La production reste inchangée.
