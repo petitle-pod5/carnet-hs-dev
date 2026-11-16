@@ -415,3 +415,12 @@ En conséquence, la méthode de vérification concrète reste à arbitrer : tél
 ### Vérification utilisateur — 16 novembre 2026
 
 L'utilisateur confirme que la vérification demandée est OK. Le rendu et le comportement de l'icône œil ont été validés sur l'environnement testé. Aucun autre changement n'est signalé.
+
+
+### Recette utilisateur — persistance du profil après reconnexion (16 novembre 2026)
+
+L'utilisateur confirme avoir complété et enregistré son profil, effectué une déconnexion, puis s'être reconnecté avec le même compte. Toutes les informations du profil ont été retrouvées après reconnexion.
+
+**Conclusion limitée au scénario testé :** la persistance du profil et de la mission principale dans Supabase, puis leur récupération après reconnexion sur le même compte, sont confirmées par ce test utilisateur.
+
+**Tests restant à réaliser :** récupération sur un autre appareil/navigateur, isolation entre deux comptes distincts, tests d'accès non autorisé et gestion des erreurs réseau. Les HS, validations et événements d'audit restent hors de cette validation et leur synchronisation n'est pas encore confirmée.
