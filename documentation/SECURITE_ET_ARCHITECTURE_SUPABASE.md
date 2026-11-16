@@ -398,3 +398,15 @@ Le principe d'un identifiant client central indépendant de l'e-mail est validé
 Le 16 novembre 2026, l'utilisateur valide le principe de ne pas imposer une collecte excessive de données personnelles pour lutter contre les inscriptions multiples. La protection contre les abus doit rester proportionnée et ne pas compliquer inutilement l'inscription des clients légitimes.
 
 En conséquence, la méthode de vérification concrète reste à arbitrer : téléphone vérifié, référence de moyen de paiement tokenisée ou combinaison de signaux. Le choix devra prendre en compte les faux positifs, les changements légitimes de coordonnées, l'accessibilité, la sécurité et les exigences RGPD. Cette validation porte sur le principe de minimisation, pas encore sur une méthode technique particulière.
+
+
+## Ergonomie des champs mot de passe — icône œil (16 novembre 2026)
+
+À la demande de l'utilisateur, les boutons texte « Afficher » ont été remplacés par une icône œil intégrée visuellement à droite du champ de saisie, sur le formulaire de connexion et le champ de confirmation à l'inscription.
+
+- Un clic affiche le mot de passe et remplace l'icône par un œil barré ; un nouveau clic masque le mot de passe.
+- Les attributs accessibles aria-label, aria-pressed et title sont mis à jour selon l'état.
+- Commit DEV : 89b6474e5a8dc4dd0a89a604871d785dd7de6ad6.
+- Aucun changement de logique d'authentification ni de stockage du mot de passe.
+- Rendu sur appareils et test fonctionnel à confirmer par l'utilisateur.
+- Production non modifiée.
