@@ -340,3 +340,24 @@ Statut : étude préparatoire uniquement — aucune migration ni modification ap
 ### Limites
 
 Ce document est une proposition technique préparatoire. Aucun schéma SQL, policy RLS, code applicatif ou donnée Supabase n'a été modifié par cette étude. Les choix métier et le schéma définitif restent à valider avant implémentation.
+
+## Parcours unique et gestion des abonnements — décision produit validée le 16 novembre 2026
+
+Le choix de la formule est réalisé sur le site internet Carnet HS. Le site constitue le point d'entrée commercial (présentation des offres, souscription et espace client) ; l'application mobile/web reste un outil unique utilisé par tous les abonnés.
+
+### Principes validés
+
+- Un seul compte Auth Supabase par utilisateur, quelle que soit la formule.
+- L'utilisateur peut faire évoluer son abonnement depuis son espace client sur le site, sans recréer de compte.
+- Le changement d'offre modifie les droits et les fonctionnalités disponibles, sans supprimer ni réinitialiser les données du compte : profil, missions, heures supplémentaires, validations et sauvegardes.
+- L'application lit les droits associés au compte et adapte le parcours et les fonctions accessibles.
+- Les autorisations doivent être contrôlées côté serveur. Le masquage d'un bouton ou d'un écran dans le navigateur n'est jamais une protection suffisante.
+- Le site pilote la relation commerciale et l'abonnement ; l'application fournit les fonctions correspondant aux droits actifs.
+
+### Architecture à définir avant implémentation
+
+Prévoir un enregistrement d'abonnement rattaché à l'identifiant utilisateur Auth, avec au minimum l'offre, l'état de l'abonnement, les dates d'effet et les références nécessaires au fournisseur de paiement. Définir un mécanisme fiable pour mettre à jour les droits après souscription ou changement de formule, gérer les paiements échoués, résiliations et périodes de transition, et éviter qu'une notification de paiement falsifiée ou rejouée puisse accorder des droits.
+
+Les changements de formule ne doivent pas provoquer de duplication de compte ni de migration destructive des données. Les transitions entre offres devront être testées avec conservation de l'historique et contrôle des droits avant/après changement.
+
+**Statut :** principe fonctionnel validé le 16 novembre 2026. Le fournisseur de paiement, le schéma précis, les règles de facturation et le code ne sont pas encore choisis ou implémentés. Cette décision n'a entraîné aucune modification de l'application ni de Supabase. La production reste inchangée.
