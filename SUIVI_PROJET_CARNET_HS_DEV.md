@@ -204,4 +204,4 @@ L'utilisateur valide le principe de ne pas imposer une collecte excessive de don
 - [x] Conserver les attributs d'accessibilité (aria-label, aria-pressed, title).
 - [x] Appliquer le même comportement au champ de confirmation à l'inscription.
 - [x] Modification poussée sur DEV uniquement : commit 89b6474e5a8dc4dd0a89a604871d785dd7de6ad6.
-- [ ] Vérifier le rendu sur ordinateur et mobile et tester les deux champs.
+- [x] Vérification utilisateur confirmée : rendu et fonctionnement de l'icône œil validés sur l'environnement testé (16/11/2026).
