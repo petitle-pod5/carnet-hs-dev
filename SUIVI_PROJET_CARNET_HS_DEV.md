@@ -195,3 +195,13 @@ L'utilisateur valide le principe de ne pas imposer une collecte excessive de don
 
 - [x] Principe de proportionnalité et de minimisation des données validé.
 - [ ] Choisir la méthode concrète de vérification (téléphone, moyen de paiement tokenisé ou combinaison) après étude des cas limites et des contraintes RGPD.
+
+
+## 14. Ergonomie connexion — icône œil pour afficher le mot de passe (16 novembre 2026)
+
+- [x] Remplacer le bouton texte « Afficher » par une icône œil à droite du champ mot de passe.
+- [x] Basculer vers une icône œil barré lorsque le mot de passe est visible.
+- [x] Conserver les attributs d'accessibilité (aria-label, aria-pressed, title).
+- [x] Appliquer le même comportement au champ de confirmation à l'inscription.
+- [x] Modification poussée sur DEV uniquement : commit 89b6474e5a8dc4dd0a89a604871d785dd7de6ad6.
+- [ ] Vérifier le rendu sur ordinateur et mobile et tester les deux champs.
