@@ -471,3 +471,43 @@ Le total est de 17 policies, avec la répartition attendue par la migration init
 ### Étape suivante
 
 Préparer des tests contrôlés avec deux comptes Auth distincts via des sessions authentifiées de l'application DEV ou un client de test utilisant les sessions de ces comptes. Vérifier au minimum que chaque compte ne peut lire ni modifier les lignes de l'autre, et que les refus ou résultats vides correspondent aux règles attendues. Ne pas utiliser le rôle SQL élevé du SQL Editor comme substitut à un utilisateur authentifié ; ne jamais exposer ni utiliser une clé service_role dans le navigateur.
+
+
+## Préparation de la recette RLS — revue statique du 16 novembre 2026
+
+La migration SQL initiale a été relue directement dans le dépôt DEV (blob SHA `4af2c3a56a331385549a040ab31d242783650389`). Cette revue est documentaire : elle n'exécute aucune opération sur Supabase.
+
+### Matrice des droits prévue par la migration
+
+| Table | SELECT | INSERT | UPDATE | DELETE | Contrôle de propriété prévu |
+|---|---:|---:|---:|---:|---|
+| profiles | oui | oui | oui | non | `id = auth.uid()` |
+| missions | oui | oui | oui | oui | `user_id = auth.uid()` |
+| overtime_entries | oui | oui | oui | oui | `user_id = auth.uid()` |
+| validations | oui | oui | non | non | lecture par `user_id`; insertion avec `user_id = validator_user_id = auth.uid()` et `self_recorded` |
+| audit_events | oui | oui | non | non | lecture par propriétaire; insertion avec propriétaire et acteur égaux à `auth.uid()` |
+| sync_receipts | oui | oui | non | non | `user_id = auth.uid()` |
+
+Les privilèges SQL accordés à `authenticated` dans la migration correspondent à cette matrice. La migration ne donne pas de privilège à `anon`. La protection effective des lignes dépend en plus des policies RLS.
+
+### Points de vigilance relevés
+
+- `profiles` ne possède pas de policy DELETE : la suppression d'un profil par un client authentifié n'est pas prévue.
+- `validations`, `audit_events` et `sync_receipts` sont conçues en ajout/lecture seulement pour le rôle authentifié ; pas d'UPDATE ni DELETE prévu.
+- Les lignes `overtime_entries` sont contrôlées par propriétaire dans la policy ; la clé étrangère composée interdit également de rattacher une heure à une mission appartenant à un autre utilisateur.
+- `validations` n'autorise que `self_recorded` et le validateur doit être l'utilisateur connecté. Aucune délégation de chef n'est prévue.
+- `audit_events` exige que `actor_user_id` soit le compte connecté et que `user_id` soit ce même compte.
+- Les tests effectués dans le SQL Editor avec le rôle administratif ne simulent pas une session Auth utilisateur et ne doivent pas être interprétés comme un test RLS réel.
+
+### Plan de recette à exécuter avec deux sessions Auth
+
+1. Relever les UUID Auth des comptes A et B sans partager leurs mots de passe, jetons ou clés.
+2. Depuis la session B, tenter une lecture ciblée du profil A : résultat attendu, zéro ligne. Répéter pour les missions, heures, validations, événements d'audit et reçus de synchronisation du compte A.
+3. Vérifier depuis A que ses propres lignes restent lisibles : contrôle positif.
+4. Pour tester INSERT / UPDATE / DELETE sans risquer les données réelles, créer d'abord des lignes sentinelles clairement identifiées, uniquement dans DEV. Les tentatives de B viseront exclusivement ces lignes de test appartenant à A. Nettoyage par A après constat des résultats.
+5. Ne jamais tester un DELETE contre une vraie mission, une vraie heure, un vrai profil ou un événement utile. Ne jamais utiliser le SQL Editor en privilèges élevés pour simuler un utilisateur.
+6. Consigner séparément le résultat de chaque opération : refus explicite, zéro ligne affectée, ou succès inattendu. Un SELECT filtré par RLS renvoie souvent zéro ligne plutôt qu'une erreur.
+
+### Limite et statut
+
+La revue statique ne constitue pas un test d'exécution. À ce stade, seule la configuration générale a été contrôlée visuellement : six tables avec RLS active, 17 policies au total, privilège SELECT pour `authenticated` et absence de SELECT pour `anon`. Aucun test direct des policies avec deux sessions Auth n'a encore été exécuté. Aucun changement de code, de schéma, de policy ou de donnée Supabase n'a été effectué pendant cette préparation. Production V3.4.1 inchangée.
