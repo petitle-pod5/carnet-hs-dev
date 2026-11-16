@@ -187,3 +187,11 @@ Objectifs :
 **À concevoir avant développement :** méthode de vérification du client (par exemple téléphone vérifié et/ou moyen de paiement tokenisé, à arbitrer), procédure de récupération/rattachement d'un compte, gestion des cas légitimes de changement de coordonnées, règles anti-fraude proportionnées et schéma de données sécurisé.
 
 **Statut :** principe d'identifiant client central validé ; méthode de vérification, règles détaillées et implémentation non décidées. Aucun code ni schéma Supabase modifié.
+
+
+### Complément validé — vérification proportionnée du client (16 novembre 2026)
+
+L'utilisateur valide le principe de ne pas imposer une collecte excessive de données personnelles : la protection contre les essais multiples doit décourager les abus sans compliquer inutilement l'inscription des clients légitimes.
+
+- [x] Principe de proportionnalité et de minimisation des données validé.
+- [ ] Choisir la méthode concrète de vérification (téléphone, moyen de paiement tokenisé ou combinaison) après étude des cas limites et des contraintes RGPD.
