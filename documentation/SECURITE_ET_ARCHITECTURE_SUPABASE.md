@@ -410,3 +410,8 @@ En conséquence, la méthode de vérification concrète reste à arbitrer : tél
 - Aucun changement de logique d'authentification ni de stockage du mot de passe.
 - Rendu sur appareils et test fonctionnel à confirmer par l'utilisateur.
 - Production non modifiée.
+
+
+### Vérification utilisateur — 16 novembre 2026
+
+L'utilisateur confirme que la vérification demandée est OK. Le rendu et le comportement de l'icône œil ont été validés sur l'environnement testé. Aucun autre changement n'est signalé.
