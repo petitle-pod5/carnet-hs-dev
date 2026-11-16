@@ -227,3 +227,16 @@ L'utilisateur confirme avoir effectué le test sur son téléphone Android Oukit
 - [x] Le test fonctionnel de séparation et de conservation des profils est réussi sur DEV.
 - [ ] Tester séparément les policies RLS et les accès directs non autorisés avec deux sessions/comptes ; le test d'interface ne suffit pas à certifier toute la sécurité backend.
 
+
+
+### Contrôle SQL des droits et policies — 16 novembre 2026
+
+L'utilisateur a exécuté dans le SQL Editor Supabase une requête de contrôle en lecture seule sur les six tables du schéma public.
+
+Résultats visibles sur la capture :
+- RLS active (true) sur les six tables.
+- Nombre de policies : 17 au total, réparties comme attendu : profiles 3, missions 4, overtime_entries 4, validations 2, audit_events 2, sync_receipts 2.
+- Le privilège SQL SELECT est accordé au rôle authenticated sur les six tables.
+- Le privilège SQL SELECT n'est pas accordé au rôle anon sur les six tables.
+
+**Conclusion limitée :** le contrôle de configuration est cohérent avec la migration initiale. Il confirme l'activation de RLS, le nombre de policies et les privilèges SELECT affichés. Il ne teste pas les expressions réelles des policies ni les opérations SELECT/INSERT/UPDATE/DELETE sous deux sessions Auth distinctes. Les tests d'isolation backend restent à effectuer. Aucun changement de code, de policy, de schéma ou de donnée n'a été réalisé ; production inchangée.
