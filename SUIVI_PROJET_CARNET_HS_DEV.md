@@ -164,3 +164,26 @@ Voir le détail dans `documentation/SECURITE_ET_ARCHITECTURE_SUPABASE.md`, secti
 **À concevoir avant développement :** modèle d'abonnement lié à l'identifiant Auth, gestion des changements de formule et de leur date d'effet, paiement/facturation, traitement des échecs ou interruptions de paiement, et procédure de synchronisation des droits entre le site, le backend et l'application.
 
 **Statut :** principe fonctionnel validé ; architecture détaillée, fournisseur de paiement et implémentation non décidés. Aucun code ni paramètre Supabase modifié lors de cette décision.
+
+
+## 13. Identifiant client central et prévention des essais multiples — décision validée le 16 novembre 2026
+
+**Décision validée :** créer un identifiant client central, indépendant de l'adresse e-mail. Les comptes de connexion éventuels, les périodes d'essai et les abonnements seront rattachés à cet identifiant client.
+
+Objectifs :
+- reconnaître un même client même s'il utilise plusieurs adresses e-mail ;
+- empêcher qu'une simple nouvelle adresse e-mail permette de recommencer la période d'essai gratuite ;
+- conserver un historique cohérent des essais et abonnements ;
+- permettre l'évolution d'offre sans création d'un nouveau compte ni perte de données.
+
+**Principes de conception :**
+- distinguer l'identité client, les identifiants de connexion et l'abonnement ;
+- prévoir une procédure de vérification et de rattachement de comptes avec contrôle de possession, sans fusion automatique sur la seule ressemblance d'adresses ou de noms ;
+- appliquer les règles d'essai au niveau du client central, avec dates et historique non réinitialisable par une nouvelle inscription ;
+- limiter les données personnelles collectées et définir leur durée de conservation, leurs finalités et les droits d'accès conformément au RGPD ;
+- ne pas utiliser l'empreinte de l'appareil comme preuve unique d'identité ; un appareil peut être partagé ou remplacé ;
+- ne pas conserver de données de carte bancaire : déléguer le paiement à un prestataire adapté et ne garder que les références minimales nécessaires.
+
+**À concevoir avant développement :** méthode de vérification du client (par exemple téléphone vérifié et/ou moyen de paiement tokenisé, à arbitrer), procédure de récupération/rattachement d'un compte, gestion des cas légitimes de changement de coordonnées, règles anti-fraude proportionnées et schéma de données sécurisé.
+
+**Statut :** principe d'identifiant client central validé ; méthode de vérification, règles détaillées et implémentation non décidées. Aucun code ni schéma Supabase modifié.
