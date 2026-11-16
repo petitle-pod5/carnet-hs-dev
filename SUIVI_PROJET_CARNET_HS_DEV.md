@@ -148,3 +148,19 @@ Ces éléments ne sont pas des engagements de développement tant qu'ils n'ont p
 - [ ] Concevoir et tester les droits des chefs d'équipe sur DEV.
 
 Voir le détail dans `documentation/SECURITE_ET_ARCHITECTURE_SUPABASE.md`, section « Préparation technique — synchronisation et validation indépendante ».
+
+## 12. Parcours commercial et évolution des abonnements — décision validée le 16 novembre 2026
+
+**Décision produit validée :** le choix initial de l'offre est effectué sur le site internet Carnet HS, et non dans l'application. Le site présente les formules et oriente l'utilisateur vers la souscription.
+
+- Une seule application Carnet HS pour toutes les formules.
+- Un seul compte utilisateur, conservé lors de toute évolution d'abonnement.
+- L'abonné peut faire évoluer son offre depuis son espace client sur le site, sans créer un nouveau compte.
+- Le changement d'offre met à jour les droits et les fonctionnalités accessibles ; il ne doit pas réinitialiser ni faire perdre l'identifiant, le profil, les missions, les HS, les validations ou les sauvegardes.
+- À la connexion, l'application récupère les droits d'abonnement associés au compte et adapte l'accès aux fonctionnalités.
+- Le contrôle des droits doit être appliqué côté serveur (et dans les politiques d'accès), pas uniquement en masquant des éléments d'interface.
+- Le site gère le parcours commercial et la souscription ; l'application reste l'outil opérationnel.
+
+**À concevoir avant développement :** modèle d'abonnement lié à l'identifiant Auth, gestion des changements de formule et de leur date d'effet, paiement/facturation, traitement des échecs ou interruptions de paiement, et procédure de synchronisation des droits entre le site, le backend et l'application.
+
+**Statut :** principe fonctionnel validé ; architecture détaillée, fournisseur de paiement et implémentation non décidés. Aucun code ni paramètre Supabase modifié lors de cette décision.
