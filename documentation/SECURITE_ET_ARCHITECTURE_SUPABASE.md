@@ -447,3 +447,27 @@ L'utilisateur a effectué le test sur Carnet HS DEV avec deux comptes Auth disti
 **Limite importante :** ce test d'interface ne constitue pas à lui seul une vérification exhaustive des politiques RLS. Les tests directs des droits de lecture/écriture table par table, des accès non autorisés et des tentatives de contournement avec deux sessions distinctes restent à effectuer avant de considérer la sécurité backend comme validée.
 
 Aucun code applicatif, schéma SQL, policy RLS ou paramètre Supabase n'a été modifié à la suite de cette recette. La production reste inchangée.
+
+
+## Contrôle SQL des droits et policies — 16 novembre 2026
+
+L'utilisateur a exécuté dans Supabase SQL Editor la requête de contrôle en lecture seule portant sur les six tables du schéma public. La capture des résultats affiche :
+
+| Table | RLS active | Nombre de policies | authenticated SELECT | anon SELECT |
+|---|---:|---:|---:|---:|
+| audit_events | true | 2 | true | false |
+| missions | true | 4 | true | false |
+| overtime_entries | true | 4 | true | false |
+| profiles | true | 3 | true | false |
+| sync_receipts | true | 2 | true | false |
+| validations | true | 2 | true | false |
+
+Le total est de 17 policies, avec la répartition attendue par la migration initiale. Le privilège SELECT est accordé au rôle authenticated et non accordé au rôle anon sur chacune des six tables.
+
+**Interprétation :** ce résultat confirme la configuration générale affichée (RLS active, nombre de policies et privilèges SQL SELECT). Il ne prouve pas à lui seul que chaque expression USING / WITH CHECK fonctionne comme prévu, ni que les opérations de lecture, insertion, modification et suppression sont correctement isolées entre deux utilisateurs réels. Un contrôle de grants SELECT ne couvre pas non plus les autres privilèges SQL. Les tests backend sous deux sessions Auth distinctes restent donc indispensables.
+
+**Périmètre de l'opération :** requête SELECT uniquement ; aucune donnée, table, policy, fonction ou configuration Supabase n'a été modifiée. Aucun changement de code applicatif. La production V3.4.1 reste inchangée.
+
+### Étape suivante
+
+Préparer des tests contrôlés avec deux comptes Auth distincts via des sessions authentifiées de l'application DEV ou un client de test utilisant les sessions de ces comptes. Vérifier au minimum que chaque compte ne peut lire ni modifier les lignes de l'autre, et que les refus ou résultats vides correspondent aux règles attendues. Ne pas utiliser le rôle SQL élevé du SQL Editor comme substitut à un utilisateur authentifié ; ne jamais exposer ni utiliser une clé service_role dans le navigateur.
