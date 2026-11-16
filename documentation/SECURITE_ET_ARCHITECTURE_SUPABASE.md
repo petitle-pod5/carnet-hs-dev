@@ -391,3 +391,10 @@ Le téléphone vérifié et/ou une référence de moyen de paiement tokenisée p
 ### Statut
 
 Le principe d'un identifiant client central indépendant de l'e-mail est validé. Le modèle de données, la méthode de vérification, les règles de rattachement de plusieurs comptes et la durée de l'essai restent à définir. Aucun code, schéma SQL, policy RLS ni paramètre Supabase n'a été modifié à la suite de cette décision. La production reste inchangée.
+
+
+### Principe complémentaire validé — minimisation des données
+
+Le 16 novembre 2026, l'utilisateur valide le principe de ne pas imposer une collecte excessive de données personnelles pour lutter contre les inscriptions multiples. La protection contre les abus doit rester proportionnée et ne pas compliquer inutilement l'inscription des clients légitimes.
+
+En conséquence, la méthode de vérification concrète reste à arbitrer : téléphone vérifié, référence de moyen de paiement tokenisée ou combinaison de signaux. Le choix devra prendre en compte les faux positifs, les changements légitimes de coordonnées, l'accessibilité, la sécurité et les exigences RGPD. Cette validation porte sur le principe de minimisation, pas encore sur une méthode technique particulière.
