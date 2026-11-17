@@ -252,3 +252,56 @@ Résultats visibles sur la capture :
 - [ ] Vérifier les opérations autorisées du propriétaire et nettoyer les seules lignes sentinelles créées pour le test.
 
 La préparation documentaire est consignée dans `documentation/SECURITE_ET_ARCHITECTURE_SUPABASE.md`. Revue statique uniquement : aucune requête d'écriture, aucun changement de policy, aucun changement applicatif ou de donnée Supabase. La production reste inchangée.
+
+
+## 15. Site internet commercial — audit statique initial du 17 novembre 2026
+
+**Périmètre :** examen en lecture seule du fichier commercial de production fourni par l'utilisateur (preview-commercial.html) et des ressources associées récupérées dans le dépôt de production. Cette revue ne constitue pas un test fonctionnel complet du site en navigateur. Aucun fichier, paramètre, compte ou contenu de production n'a été modifié.
+
+### Éléments examinés
+
+- preview-commercial.html — structure et liens de la page commerciale.
+- site-commercial-preview/styles.css — styles et règles responsive.
+- site-commercial-preview/app.js — logique de l'assistant de démonstration.
+- site-commercial-preview/mentions-legales.html — contenu juridique provisoire.
+- site-commercial-preview/confidentialite.html — projet de texte relatif aux données personnelles.
+
+### Constats confirmés par lecture du code
+
+- [x] Structure HTML organisée en sections : accueil, fonctionnement, offres, questions, appel final et pied de page.
+- [x] Navigation principale par ancres internes ; boutons principaux renvoyant aux sections de la page.
+- [x] Feuilles de style comportant deux seuils responsive (850 px et 560 px) avec réorganisation des colonnes et cartes.
+- [x] Assistant local à réponses prédéfinies ; les questions et réponses sont insérées avec textContent. Les questions ne sont pas transmises à un service distant par le JavaScript examiné.
+- [x] Quatre questions rapides sont configurées ; les réponses reposent sur une recherche simple de mots-clés et peuvent être imprécises pour des questions ambiguës ou multi-sujets.
+- [x] QR code généré par un service tiers (api.qrserver.com) et configuré pour pointer vers l'application de production https://petitle-pod5.github.io/carnet-hs/.
+- [x] Le bouton « Ouvrir Carnet HS » pointe également vers l'application de production, et non vers DEV.
+- [x] Le pied de page contient encore l'adresse provisoire contact@exemple.fr.
+- [x] Les pages Mentions légales et Confidentialité existent, mais affichent explicitement leur statut provisoire et contiennent des champs à compléter (identité de l'éditeur, coordonnées, hébergeur, responsable du traitement, contact, etc.).
+- [x] La maquette précise qu'aucune souscription ni aucun paiement ne sont proposés à ce stade.
+- [x] Le texte de confidentialité décrit l'assistant comme local et indique que les sauvegardes distantes/synchronisations évoquées ne sont pas actives dans cette maquette.
+
+### Points de vigilance / actions proposées — non encore validés comme décisions produit
+
+| Priorité | Point | Action proposée |
+|---|---|---|
+| P1 | Contact provisoire | Définir et publier une adresse de contact réelle avant ouverture commerciale. |
+| P1 | Mentions légales et confidentialité provisoires | Compléter et faire vérifier les textes selon l'identité juridique, l'hébergement et les traitements réellement mis en œuvre. |
+| P1 | Parcours commercial incomplet | Définir le parcours réel de découverte, création de compte, choix d'offre, souscription et accès à l'application avant d'annoncer une souscription disponible. |
+| P2 | QR code dépendant d'un service tiers | Étudier la génération et l'hébergement du QR code dans les ressources du projet ; vérifier la destination sur téléphone. |
+| P2 | Assistant à mots-clés | Tester les questions ambiguës et prévoir une réponse de repli claire ; maintenir les réponses alignées sur les fonctions réellement disponibles. |
+| P2 | Responsive non testé sur appareils | Effectuer une recette réelle sur plusieurs largeurs d'écran et sur Android/iPhone. |
+| P2 | Ressources et liens | Tester en navigateur le chargement CSS/JS, les liens de pied de page, les redirections et le QR code. |
+
+### Limites de cette revue
+
+- Le code CSS prévoit une adaptation mobile, mais aucun rendu réel sur téléphone n'a été validé par cette revue.
+- La présence d'un lien ou d'un bouton dans le code ne prouve pas que sa destination est disponible ou que son comportement fonctionne en ligne.
+- Le QR code est configuré vers la production ; son affichage et son scan effectif restent à tester.
+- Aucun parcours de création de compte, paiement ou souscription n'a été exécuté.
+- Les mentions légales et la confidentialité n'ont pas fait l'objet d'une validation juridique.
+- Les constats concernent la version des fichiers examinés le 17/11/2026 ; ils ne certifient pas à eux seuls l'état actuel du site en production.
+
+**Statut :** audit statique initial réalisé ; audit fonctionnel en navigateur et recette mobile restent à effectuer. Les recommandations ci-dessus sont des propositions de travail, pas des décisions de modification du site.
+
+**Règle de périmètre :** aucun changement apporté au dépôt de production petitle-pod5/carnet-hs, à son site publié, à Supabase ou à l'application. Toute correction future devra être préparée et testée sur DEV après validation explicite.
+
