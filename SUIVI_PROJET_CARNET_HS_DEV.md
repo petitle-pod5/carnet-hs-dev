@@ -305,3 +305,12 @@ La préparation documentaire est consignée dans `documentation/SECURITE_ET_ARCH
 
 **Règle de périmètre :** aucun changement apporté au dépôt de production petitle-pod5/carnet-hs, à son site publié, à Supabase ou à l'application. Toute correction future devra être préparée et testée sur DEV après validation explicite.
 
+
+
+## 16. Organisation documentaire mixte — 18 novembre 2026
+
+Les documents de suivi et de décisions destinés à la lecture et à l’archivage sont conservés en Word dans le dépôt interne, sous `01_SUIVI_DEVELOPPEMENT/`. Les tableaux et simulations sont tenus dans Excel, sous `03_TABLEAUX_EXCEL/`. La documentation technique utile aux développeurs reste en Markdown dans `documentation/`.
+
+Pour les deux premières offres, les fichiers Word `Suivi_offres_Carnet_HS_2026-11-18 (1).docx` et Excel `Suivi_offres_Carnet_HS_2026-11-18.xlsx` sont présents dans la branche `docs-offres-2026-11` du dépôt interne ; leur revue et leur fusion restent à faire. La tarification confirmée de l’offre Essentielle est de 2 €/mois. Le tarif de l’offre Connectée et les coûts de service, paiement et hébergement ne sont pas renseignés tant qu’ils ne sont pas décidés. Aucun code applicatif ni paramètre Supabase n’est modifié par cette organisation documentaire.
+
+**À valider avant toute publication commerciale ou transfert en production :** tarif Connectée, périmètres encore ouverts des deux offres, coûts réels, modèle de facturation et textes commerciaux/juridiques. Cette mise à jour documentaire ne vaut pas validation de ces points. Les fichiers bureautiques sont sur une branche de travail et ne sont pas encore fusionnés dans `main`.
