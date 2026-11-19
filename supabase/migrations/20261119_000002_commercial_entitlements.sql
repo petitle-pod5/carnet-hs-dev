@@ -21,7 +21,7 @@ declare
   candidate text;
 begin
   loop
-    candidate := 'CHS-' || upper(encode(gen_random_bytes(5), 'hex'));
+    candidate := 'CHS-' || upper(substring(replace(gen_random_uuid()::text, '-', '') from 1 for 10));
     exit when not exists (
       select 1 from public.profiles where client_code = candidate
     );
