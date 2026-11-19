@@ -342,4 +342,14 @@ Les décisions ci-dessous complètent et, lorsqu'elles diffèrent, remplacent le
 
 ### État de réalisation
 
-Le fichier `supabase/migrations/20261119_000002_commercial_entitlements.sql` est préparé comme migration additive DEV. Il ajoute `client_code` à `profiles`, crée les cinq tables, active une RLS restrictive et n'accorde pas d'écriture aux clients. La migration n'a pas été appliquée au projet distant : l'accès connecté au tableau de bord Supabase et l'état réel de la base n'étaient pas disponibles pour vérification. Aucun objet distant n'est déclaré modifié.
+Le fichier `supabase/migrations/20261119_000002_commercial_entitlements.sql` est préparé comme migration additive pour le projet `carnet-hs-dev`. Il prévoit l'ajout de `client_code` à `profiles` et des cinq tables commerciales, avec des règles RLS restrictives. La migration n'a pas été appliquée.
+
+#### État réel contrôlé dans Supabase DEV le 19 novembre 2026
+
+Le tableau de bord du projet `carnet-hs-dev` a été ouvert. L'offre actuelle ne permet pas de créer une branche de base de données sans changement payant de formule ; aucune branche n'a été créée.
+
+Une requête SQL en lecture seule a confirmé l'inventaire actuel de six tables publiques (`profiles`, `missions`, `overtime_entries`, `validations`, `audit_events`, `sync_receipts`) et 17 politiques RLS. RLS est activée sur les six tables, mais n'est pas forcée. Les 17 politiques existantes sont permissives et réservées au rôle `authenticated`.
+
+Le contrôle complémentaire des colonnes de `profiles` et des cinq tables commerciales n'a pas abouti dans l'éditeur. La présence ou l'absence de `client_code` n'est donc pas confirmée. La migration n'a pas été exécutée, et aucune modification distante de schéma, de policy ou de données n'est déclarée.
+
+**À reprendre :** confirmer les colonnes de `profiles` et l'existence des cinq tables proposées ; examiner l'interaction des nouvelles politiques restrictives avec les policies permissives déjà en place ; appliquer uniquement après ce contrôle, puis vérifier les objets et policies résultants. Ne pas toucher aux six tables historiques au-delà de l'ajout planifié de `client_code` à `profiles`, ni au projet de production `petitle-pod5/carnet-hs`.
