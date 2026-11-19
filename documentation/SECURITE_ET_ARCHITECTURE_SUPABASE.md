@@ -511,3 +511,40 @@ Les privilèges SQL accordés à `authenticated` dans la migration correspondent
 ### Limite et statut
 
 La revue statique ne constitue pas un test d'exécution. À ce stade, seule la configuration générale a été contrôlée visuellement : six tables avec RLS active, 17 policies au total, privilège SELECT pour `authenticated` et absence de SELECT pour `anon`. Aucun test direct des policies avec deux sessions Auth n'a encore été exécuté. Aucun changement de code, de schéma, de policy ou de donnée Supabase n'a été effectué pendant cette préparation. Production V3.4.1 inchangée.
+
+
+## Décisions commerciales et droits — 19 novembre 2026
+
+### Principes retenus
+
+L'UUID Supabase identifie techniquement le compte. Le code client Carnet HS (`client_code`) est un second identifiant, permanent, unique et distinct ; il est attribué côté serveur et reste indépendant de l'e-mail. Il ne constitue jamais un moyen d'authentification.
+
+Le serveur Supabase est l'autorité sur l'état des abonnements et les droits. Il communique les droits à l'application et vérifie les opérations sensibles côté serveur. L'application ne déduit jamais le paiement et le masquage d'une commande d'interface n'est pas un contrôle d'accès.
+
+L'architecture sépare quatre blocs : gestion du compte, gestion commerciale, gestion des droits, application Carnet HS. Une application unique couvre les trois offres et adapte ses fonctions aux droits. Le site commercial gère la relation et la souscription ; Supabase conserve identité, abonnement et droits ; l'application consomme ces droits.
+
+### Offre et changement d'abonnement
+
+Texte validé pour l'offre 1 — Essentielle : « Je gère mes heures supplémentaires. Je sauvegarde en local (téléphone, PC, Mac). Je fais le bilan avec mon responsable, à la fréquence que nous définissons ensemble, pour validation. »
+
+Le changement d'offre est immédiat dans les deux sens. Les droits sont actualisés immédiatement et la facturation est régularisée au prorata. Pour une montée d'offre, l'activation attend la confirmation du paiement reçue par le serveur. Le même compte, le même UUID, le même code client et les données existantes sont conservés.
+
+### Schéma commercial proposé
+
+Ajouter progressivement `plans` (catalogue), `subscriptions` (abonnement), `plan_entitlements` (droits par offre), `subscription_events` (historique) et `billing_customers` (référence client chez le prestataire). Les six tables existantes — `profiles`, `missions`, `overtime_entries`, `validations`, `audit_events`, `sync_receipts` — sont préservées. Seul l'ajout demandé de `client_code` à `profiles` est compris dans la migration proposée ; aucune autre table historique n'est remaniée.
+
+Une migration additive DEV est préparée dans `supabase/migrations/20261119_000002_commercial_entitlements.sql`. Elle impose une RLS sur les cinq nouvelles tables, limite la lecture au catalogue actif et aux données commerciales propres au compte, et n'accorde aucun droit d'écriture aux rôles clients. Les écritures commerciales sont réservées au serveur de confiance. Aucune migration n'a été exécutée sur Supabase : le projet connecté et les politiques réellement en place n'ont pas pu être inspectés via un connecteur Supabase dans cette session. La vérification et l'application DEV restent à faire après confirmation de l'environnement cible.
+
+### Hors connexion et notifications
+
+Carnet HS conserve localement les heures et indique les données en attente lorsque la connexion manque. L'application contrôle le réseau et la joignabilité du serveur. Au retour de la connexion, elle vérifie les droits puis reprend automatiquement la synchronisation, avec un message tel que « Connexion active, synchronisation en cours… ». Les opérations sont idempotentes et ne sont considérées synchronisées qu'après accusé du serveur.
+
+Le serveur envoie un e-mail avant l'échéance et un rappel au début de la période de tolérance de 7 jours. Une coupure réseau n'efface pas les données locales ; leur synchronisation dépend du retour du réseau et des droits applicables.
+
+### Validation par le responsable
+
+Le chef valide par un lien sécurisé ou avec son propre compte. La procédure en cas de refus et de correction reste à confirmer avec le Rex.
+
+### Points non décidés
+
+Restent à confirmer : procédure de refus/correction avec le Rex ; règles détaillées de sécurité du lien ; offres 2 et 3 (noms, tarifs et contenu détaillé) ; prestataire de paiement ; mécanisme comptable du prorata ; délai exact des e-mails avant échéance ; durée de validité des droits mémorisés hors connexion et comportement de synchronisation après expiration. Ne pas compléter ces points par supposition.
