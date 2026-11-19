@@ -38,9 +38,7 @@ set search_path = ''
 as $$
 begin
   if tg_op = 'INSERT' then
-    if new.client_code is null or btrim(new.client_code) = '' then
-      new.client_code := public.generate_client_code();
-    end if;
+    new.client_code := public.generate_client_code();
   elsif new.client_code is distinct from old.client_code then
     raise exception 'client_code is permanent and cannot be changed';
   end if;
@@ -48,16 +46,19 @@ begin
 end;
 $$;
 
-drop trigger if exists profiles_assign_client_code on public.profiles;
-create trigger profiles_assign_client_code
-before insert or update of client_code on public.profiles
-for each row execute function public.profiles_assign_client_code();
+revoke all on function public.generate_client_code() from public, anon, authenticated;
+revoke all on function public.profiles_assign_client_code() from public, anon, authenticated;
 
 update public.profiles
 set client_code = public.generate_client_code()
 where client_code is null or btrim(client_code) = '';
 
 alter table public.profiles alter column client_code set not null;
+
+drop trigger if exists profiles_assign_client_code on public.profiles;
+create trigger profiles_assign_client_code
+before insert or update of client_code on public.profiles
+for each row execute function public.profiles_assign_client_code();
 
 -- Catalogue: pas de tarifs ni de promesses fonctionnelles non valides ici.
 create table if not exists public.plans (
@@ -169,6 +170,8 @@ revoke all on public.plans, public.plan_entitlements, public.subscriptions,
   public.subscription_events, public.billing_customers from anon, authenticated;
 grant select on public.plans, public.plan_entitlements, public.subscriptions,
   public.subscription_events, public.billing_customers to authenticated;
+grant all on public.plans, public.plan_entitlements, public.subscriptions,
+  public.subscription_events, public.billing_customers to service_role;
 grant select (id, client_code) on public.profiles to authenticated;
 
 commit;
