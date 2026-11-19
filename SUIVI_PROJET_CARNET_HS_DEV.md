@@ -314,3 +314,32 @@ Les documents de suivi et de décisions destinés à la lecture et à l’archiv
 Pour les deux premières offres, les fichiers Word `Suivi_offres_Carnet_HS_2026-11-18 (1).docx` et Excel `Suivi_offres_Carnet_HS_2026-11-18.xlsx` sont présents sur `main` dans le dépôt interne depuis la fusion de la PR #1, le 18 novembre 2026. La tarification confirmée de l’offre Essentielle est de 2 €/mois. Le tarif de l’offre Connectée et les coûts de service, paiement et hébergement ne sont pas renseignés tant qu’ils ne sont pas décidés. Aucun code applicatif ni paramètre Supabase n’est modifié par cette organisation documentaire.
 
 **À valider avant toute publication commerciale ou transfert en production :** tarif Connectée, périmètres encore ouverts des deux offres, coûts réels, modèle de facturation et textes commerciaux/juridiques. Cette mise à jour documentaire ne vaut pas validation de ces points. Les fichiers bureautiques sont fusionnés dans `main` du dépôt interne.
+
+
+## Décisions commerciales et techniques — 19 novembre 2026
+
+Les décisions ci-dessous complètent et, lorsqu'elles diffèrent, remplacent les formulations provisoires antérieures de ce tableau.
+
+### Décisions validées
+
+- Identité : l'UUID Supabase reste l'identifiant technique. Un `client_code` Carnet HS distinct, unique et permanent est attribué côté serveur. Il ne dépend pas de l'e-mail et ne remplace pas l'authentification.
+- Offre 1 — Essentielle : « Je gère mes heures supplémentaires. Je sauvegarde en local (téléphone, PC, Mac). Je fais le bilan avec mon responsable, à la fréquence que nous définissons ensemble, pour validation. »
+- Le serveur Supabase est l'autorité sur les abonnements et les droits. Il les détermine, transmet les droits à l'application et vérifie les opérations sensibles ; l'interface seule ne sécurise pas une fonction.
+- Une seule application sert les trois offres et adapte les fonctionnalités selon les droits. Le site commercial gère la relation client et la souscription ; Supabase conserve identité, abonnements et droits ; l'application utilise les droits.
+- Architecture en quatre blocs : gestion du compte, gestion commerciale, gestion des droits, application Carnet HS.
+- Changement d'offre immédiat dans les deux sens, avec adaptation des droits et régularisation au prorata. Une montée d'offre attend la confirmation du paiement côté serveur. Compte, UUID, code client et données restent les mêmes.
+- Les cinq tables commerciales proposées sont `plans`, `subscriptions`, `plan_entitlements`, `subscription_events` et `billing_customers`. Les six tables historiques restent intactes ; toute modification ultérieure exige un plan explicite.
+- Hors connexion : saisie et conservation locales, détection de la connexion et de la joignabilité du serveur, puis synchronisation automatique au retour du réseau avec le message « Connexion active, synchronisation en cours… ». Une donnée n'est confirmée synchronisée qu'après accusé du serveur ; les reprises évitent les doublons.
+- E-mails automatiques avant l'échéance et au début de la tolérance de 7 jours. Une coupure réseau n'efface pas les heures locales ; l'application informe que la synchronisation attend le retour du réseau et les droits applicables.
+- Validation du chef par lien sécurisé ou par son propre compte.
+
+### Points en attente
+
+- Avec le Rex : procédure de refus, correction, nouvelle soumission et traçabilité d'une validation.
+- Détails du lien sécurisé et de la vérification de l'identité du chef.
+- Noms, tarifs et périmètre détaillé des offres 2 et 3, calendrier exact des rappels, prestataire de paiement et modalité d'avoir/remboursement du prorata.
+- Durée de cache des droits hors connexion et comportement précis de synchronisation après expiration.
+
+### État de réalisation
+
+Le fichier `supabase/migrations/20261119_000002_commercial_entitlements.sql` est préparé comme migration additive DEV. Il ajoute `client_code` à `profiles`, crée les cinq tables, active une RLS restrictive et n'accorde pas d'écriture aux clients. La migration n'a pas été appliquée au projet distant : l'accès connecté au tableau de bord Supabase et l'état réel de la base n'étaient pas disponibles pour vérification. Aucun objet distant n'est déclaré modifié.
