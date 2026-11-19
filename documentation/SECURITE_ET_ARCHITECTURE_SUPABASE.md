@@ -511,3 +511,22 @@ Les privilèges SQL accordés à `authenticated` dans la migration correspondent
 ### Limite et statut
 
 La revue statique ne constitue pas un test d'exécution. À ce stade, seule la configuration générale a été contrôlée visuellement : six tables avec RLS active, 17 policies au total, privilège SELECT pour `authenticated` et absence de SELECT pour `anon`. Aucun test direct des policies avec deux sessions Auth n'a encore été exécuté. Aucun changement de code, de schéma, de policy ou de donnée Supabase n'a été effectué pendant cette préparation. Production V3.4.1 inchangée.
+
+
+## Décisions validées — code client, offre Essentielle et autorité des droits (19 novembre 2026)
+
+### `profiles.client_code`
+
+Chaque profil porte un `client_code` unique et permanent, généré côté serveur avec contrôle d'unicité. Il est distinct de l'UUID Supabase et sert de référence commerciale au compte. Il reste stable lors des changements d'e-mail et d'offre. Il ne sert jamais de mot de passe ni de moyen d'authentification. `CHS-8F42K91` est un exemple de format seulement. Le mécanisme de rattachement de plusieurs comptes Auth et les règles anti-abus d'essais restent à concevoir ; le code client ne prouve pas à lui seul l'identité d'une personne et ne doit pas être utilisé comme contrôle d'accès.
+
+Cette décision précise la section antérieure sur un identifiant client central : `client_code` est la référence commerciale permanente du compte/profil. Les objectifs de rattachement multi-comptes et de limitation des essais restent des sujets non résolus, sans mécanisme validé à ce jour.
+
+### Offre 1 — Essentielle
+
+Formulation validée : « Je gère mes heures supplémentaires. Je sauvegarde en local (téléphone, PC, Mac). Je fais le bilan avec mon responsable, à la fréquence que nous définissons ensemble, pour validation. » Chaque utilisateur choisit librement cette fréquence avec son responsable ; aucune cadence n'est imposée par Carnet HS.
+
+### Autorité des abonnements et droits
+
+Le serveur fait autorité pour les abonnements et les droits. Le compte a un identifiant permanent ; le serveur connaît l'abonnement, détermine les droits et les retourne à l'application. L'application affiche les fonctions autorisées. Le serveur vérifie aussi les droits lors des opérations sensibles ; les accès directs non autorisés sont bloqués côté serveur et par RLS lorsque pertinent. Masquer un bouton ne suffit pas.
+
+**État :** ces principes sont validés le 19/11/2026. Cette note ne signifie pas que `client_code`, la gestion commerciale des abonnements ou les contrôles d'entitlements sont déjà implémentés ou testés. Le modèle de données, les migrations, l'intégration du paiement et les tests directs RLS restent à préciser/réaliser et à consigner avec preuves.
