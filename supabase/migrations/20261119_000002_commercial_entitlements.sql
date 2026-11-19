@@ -124,29 +124,44 @@ alter table public.billing_customers enable row level security;
 -- RLS restrictive: catalogue lisible uniquement par les comptes connectes;
 -- les donnees commerciales sont consultables par leur titulaire seulement.
 drop policy if exists plans_select_active on public.plans;
+drop policy if exists plans_authenticated_read on public.plans;
+create policy plans_authenticated_read on public.plans
+as permissive for select to authenticated using (true);
 create policy plans_select_active on public.plans
-for select to authenticated using (is_active);
+as restrictive for select to authenticated using (is_active);
 
 drop policy if exists plan_entitlements_select_active on public.plan_entitlements;
+drop policy if exists plan_entitlements_authenticated_read on public.plan_entitlements;
+create policy plan_entitlements_authenticated_read on public.plan_entitlements
+as permissive for select to authenticated using (true);
 create policy plan_entitlements_select_active on public.plan_entitlements
-for select to authenticated using (
+as restrictive for select to authenticated using (
   exists (select 1 from public.plans p where p.id = plan_id and p.is_active)
 );
 
 drop policy if exists subscriptions_select_own on public.subscriptions;
+drop policy if exists subscriptions_authenticated_read on public.subscriptions;
+create policy subscriptions_authenticated_read on public.subscriptions
+as permissive for select to authenticated using (true);
 create policy subscriptions_select_own on public.subscriptions
-for select to authenticated using ((select auth.uid()) = user_id);
+as restrictive for select to authenticated using ((select auth.uid()) = user_id);
 
 drop policy if exists subscription_events_select_own on public.subscription_events;
+drop policy if exists subscription_events_authenticated_read on public.subscription_events;
+create policy subscription_events_authenticated_read on public.subscription_events
+as permissive for select to authenticated using (true);
 create policy subscription_events_select_own on public.subscription_events
-for select to authenticated using (
+as restrictive for select to authenticated using (
   exists (select 1 from public.subscriptions s
     where s.id = subscription_id and s.user_id = (select auth.uid()))
 );
 
 drop policy if exists billing_customers_select_own on public.billing_customers;
+drop policy if exists billing_customers_authenticated_read on public.billing_customers;
+create policy billing_customers_authenticated_read on public.billing_customers
+as permissive for select to authenticated using (true);
 create policy billing_customers_select_own on public.billing_customers
-for select to authenticated using ((select auth.uid()) = user_id);
+as restrictive for select to authenticated using ((select auth.uid()) = user_id);
 
 -- Aucun droit client d'ecriture n'est accorde: seule la couche serveur/service
 -- authentifiee peut gerer les offres, abonnements, evenements et paiements.
