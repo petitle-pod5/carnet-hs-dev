@@ -1,6 +1,6 @@
 # Suivi du projet Carnet HS — DEV
 
-Dernière mise à jour : 15 novembre 2026  
+Dernière mise à jour : 19 novembre 2026  
 Dépôt concerné : `petitle-pod5/carnet-hs-dev`  
 Application DEV : https://petitle-pod5.github.io/carnet-hs-dev/
 
@@ -171,6 +171,9 @@ Voir le détail dans `documentation/SECURITE_ET_ARCHITECTURE_SUPABASE.md`, secti
 
 **Décision validée :** créer un identifiant client central, indépendant de l'adresse e-mail. Les comptes de connexion éventuels, les périodes d'essai et les abonnements seront rattachés à cet identifiant client.
 
+**Clarification validée le 19 novembre 2026 :** l'identifiant défini pour `profiles` est `client_code`, code unique et permanent généré côté serveur, distinct de l'UUID Supabase. Il sert de référence commerciale au compte ; ce n'est ni un mot de passe ni un moyen d'authentification. Il reste inchangé lors d'un changement d'e-mail ou d'offre. L'exemple `CHS-8F42K91` illustre seulement un format possible. Ce code ne prouve pas à lui seul qu'il s'agit de la même personne lorsque plusieurs comptes Auth existent et ne constitue pas un mécanisme anti-multiplication des essais. Les règles de rattachement de plusieurs comptes et d'attribution d'essais restent à concevoir ; les objectifs de la présente section ne sont donc pas considérés comme résolus par `client_code`.
+
+
 Objectifs :
 - reconnaître un même client même s'il utilise plusieurs adresses e-mail ;
 - empêcher qu'une simple nouvelle adresse e-mail permette de recommencer la période d'essai gratuite ;
@@ -314,3 +317,37 @@ Les documents de suivi et de décisions destinés à la lecture et à l’archiv
 Pour les deux premières offres, les fichiers Word `Suivi_offres_Carnet_HS_2026-11-18 (1).docx` et Excel `Suivi_offres_Carnet_HS_2026-11-18.xlsx` sont présents sur `main` dans le dépôt interne depuis la fusion de la PR #1, le 18 novembre 2026. La tarification confirmée de l’offre Essentielle est de 2 €/mois. Le tarif de l’offre Connectée et les coûts de service, paiement et hébergement ne sont pas renseignés tant qu’ils ne sont pas décidés. Aucun code applicatif ni paramètre Supabase n’est modifié par cette organisation documentaire.
 
 **À valider avant toute publication commerciale ou transfert en production :** tarif Connectée, périmètres encore ouverts des deux offres, coûts réels, modèle de facturation et textes commerciaux/juridiques. Cette mise à jour documentaire ne vaut pas validation de ces points. Les fichiers bureautiques sont fusionnés dans `main` du dépôt interne.
+
+
+## 15. Décisions validées — offre Essentielle et code client (19 novembre 2026)
+
+### Référence commerciale du compte
+
+- La table `profiles` contient un champ `client_code` unique et permanent, généré côté serveur avec contrôle d'unicité.
+- Il est distinct de l'UUID Supabase et sert de référence commerciale au compte.
+- Il reste inchangé lors d'un changement d'adresse e-mail ou d'offre.
+- Il ne sert jamais de mot de passe ni de mécanisme d'authentification.
+- `CHS-8F42K91` est un exemple de format, pas une spécification finale.
+- Le modèle de rattachement de plusieurs comptes Auth et la prévention des essais multiples restent à définir. Aucune implémentation de ce code n'est déclarée réalisée.
+
+### Offre 1 — Essentielle : formulation validée
+
+> Je gère mes heures supplémentaires. Je sauvegarde en local (téléphone, PC, Mac). Je fais le bilan avec mon responsable, à la fréquence que nous définissons ensemble, pour validation.
+
+La fréquence des bilans est librement choisie par chaque utilisateur avec son responsable ; elle n'est pas fixée par le produit. Cette décision ne change pas, à elle seule, les autres éléments commerciaux encore en attente.
+
+### Sécurité des abonnements et droits — principe validé
+
+- Le serveur fait autorité pour l'état des abonnements et les droits associés.
+- Le compte conserve un identifiant permanent ; le serveur connaît l'abonnement et détermine puis retourne les droits.
+- L'application affiche les fonctions permises selon les droits retournés.
+- Le serveur contrôle aussi les opérations sensibles ; les accès directs non autorisés doivent être bloqués côté serveur et par RLS lorsque pertinent.
+- Masquer un bouton dans l'application ne constitue pas un contrôle d'accès.
+
+**Statut :** décisions fonctionnelles et d'architecture validées. Schéma définitif, fournisseur de paiement, migrations, code et tests de sécurité restent à concevoir ou réaliser séparément ; aucun de ces éléments n'est déclaré implémenté ou testé par la présente mise à jour documentaire.
+
+## 16. Méthode durable de mise à jour documentaire (19 novembre 2026)
+
+Le présent tableau de suivi est la source de référence des décisions et statuts du dépôt DEV. La documentation technique est tenue dans `documentation/SECURITE_ET_ARCHITECTURE_SUPABASE.md`. À chaque décision explicitement validée, un agent met à jour le tableau ; il met également à jour le mémo technique si la décision a un impact technique. Les propositions, questions et points en attente restent identifiés comme tels et ne sont pas transformés en décisions.
+
+Les changements sont préparés sur une branche dédiée et soumis en PR brouillon pour revue. Les fichiers Word/Excel du dépôt interne sont consolidés par lot aux jalons du projet, avec conservation des versions précédentes et actualisation de l'index. La production n'est jamais modifiée dans ce flux ; aucun test, déploiement ou publication n'est déclaré sans preuve observée.
