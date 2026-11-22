@@ -1,6 +1,6 @@
 # Suivi du projet Carnet HS — DEV
 
-Dernière mise à jour : 15 novembre 2026  
+Dernière mise à jour : 22 novembre 2026  
 Dépôt concerné : `petitle-pod5/carnet-hs-dev`  
 Application DEV : https://petitle-pod5.github.io/carnet-hs-dev/
 
@@ -353,3 +353,14 @@ Une requête SQL en lecture seule a confirmé l'inventaire actuel de six tables 
 Le contrôle complémentaire des colonnes de `profiles` et des cinq tables commerciales n'a pas abouti dans l'éditeur. La présence ou l'absence de `client_code` n'est donc pas confirmée. La migration n'a pas été exécutée, et aucune modification distante de schéma, de policy ou de données n'est déclarée.
 
 **À reprendre :** confirmer les colonnes de `profiles` et l'existence des cinq tables proposées ; examiner l'interaction des nouvelles politiques restrictives avec les policies permissives déjà en place ; appliquer uniquement après ce contrôle, puis vérifier les objets et policies résultants. Ne pas toucher aux six tables historiques au-delà de l'ajout planifié de `client_code` à `profiles`, ni au projet de production `petitle-pod5/carnet-hs`.
+
+
+## 17. Site commercial Carnet HS — 22 novembre 2026
+
+Les pages de présentation des offres et les réponses prédéfinies du chatbot ont été mises à jour dans `petitle-pod5/carnet-hs`, branche `codex/site-offres-chatbots-2026-11`, commit `d43732c6f257d7a26c8a9fd9f1256cb6bbb51040`. La page affiche Essentiel à 0 € pendant trois mois, puis 2 € par mois; Essentiel + à 3,99 € par mois; Partenaire est indiqué comme formule en préparation. Le chatbot indique que les paiements et la sauvegarde cloud ne sont pas activés sur la maquette.
+
+**Vérifications effectuées le 22/11/2026 :** ouverture locale de `site-commercial/index.html`, `site-commercial-preview/index.html` et `preview-commercial.html`; test des réponses du chatbot sur les prix et les sauvegardes; `git diff --check` propre. Aucun test automatisé formel n’a été repéré ni lancé.
+
+**État de livraison :** la branche est poussée sur GitHub, mais elle n’est ni fusionnée ni déployée. Les textes des offres 2 et 3 doivent d’abord être finalisés par l’utilisateur. Après cette étape, reprendre la revue, puis traiter la fusion et le déploiement comme étapes distinctes à effectuer ultérieurement. Aucun code applicatif principal, aucune donnée ou configuration Supabase n’ont été modifiés. Le commit du site est uniquement sur sa branche de travail; la version publiée reste inchangée tant qu’il n’y a ni fusion ni déploiement.
+
+La prochaine mise à jour des documents Word/Excel de suivi commercial devra intégrer les textes définitifs et les décisions tarifaires confirmées. Les coûts réels et le modèle de facturation restent à confirmer; aucune donnée n’est inventée ici.
